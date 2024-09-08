@@ -1,0 +1,31 @@
+{
+    "common": {
+        "search": "Search",
+        "networkError": "Network error.",
+        "e500": "Something went wrong, please try again."
+    },
+    "user": {
+        "signIn": "Sign in",
+        "signUp": "Sign up",
+        "email": "Email address",
+        "password": "Password",
+        "forgotPassword": "Forgot password?",
+        "dontHaveAccount": "Don't have account?",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "confirmPassword": "Re-enter your password",
+        "passwordHint": "Password must be at least 8 characters long and must include numbers and special characters.",
+        "firstName.required": "First name is required.",
+        "lastName.required": "Last name is required.",
+        "email.required": "Email address is required.",
+        "password.required": "Password is required.",
+        "firstName.maxLength": "First name is too long (maximum 35 characters)",
+        "lastName.maxLength": "Last name is too long (maximum 35 characters)",
+        "email.pattern": "Email is invalid",
+        "password.pattern": "Password is invalid",
+        "email.existed": "Email address is already taken.",
+        "continueGoogle": "Continue with google",
+        "haveAccount": "Already have an account? Login",
+        "loginFailed": "Login failed."
+    }
+}

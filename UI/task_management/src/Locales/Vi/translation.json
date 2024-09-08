@@ -1,0 +1,35 @@
+{
+    "common": {
+        "search": "Tìm kiếm",
+        "networkError": "Lỗi kết nối mạng.",
+        "e500": "Đã xảy ra lỗi, vui lòng thử lại sau."
+    },
+    "user": {
+        "signIn": "Đăng nhập",
+        "signUp": "Đăng ký",
+        "email": "Địa chỉ email",
+        "password": "Mật khẩu",
+        "forgotPassword": "Quên mật khẩu?",
+        "dontHaveAccount": "Bạn chưa có tài khoản?",
+        "firstName": "Tên",
+        "lastName": "Họ",
+        "confirmPassword": "Nhập lại mật khẩu",
+        "passwordHint": "Mật khẩu tối thiểu 8 ký tự, phải bao gồm số và ký tự đặc biệt.",
+        "firstName.required": "Vui lòng nhập tên.",
+        "lastName.required": "Vui lòng nhập họ.",
+        "email.required": "Vui lòng nhập email.",
+        "password.required": "Vui lòng nhập mật khẩu.",
+        "firstName.maxLength": "Tên quá dài (tối đa 35 ký tự).",
+        "lastName.maxLength": "Họ quá dài (tối đa 35 ký tự).",
+        "email.pattern": "Email không hợp lệ.",
+        "password.pattern": "Mật khẩu không hợp lệ.",
+        "email.existed": "Email đã được sử dụng." ,
+        "continueGoogle": "Tiếp tục với Google",
+        "haveAccount": "Bạn đã có tài khoản? Đăng nhập",
+        "loginFailed": "Thông tin đăng nhập không chính xác."
+    },
+
+    "workspace": {
+        
+    }
+}
