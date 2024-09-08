@@ -15,6 +15,8 @@ namespace Core.Entities
         public Guid? AvatarId { get; set; }
         public Asset Avatar { get; set; }
         public DateTime CreatedDate { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpires { get; set;}
 
         public ICollection<Asset> Assets { get; set; }
         public ICollection<Project> Projects { get; set; }

@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 
 namespace Application.Models.User
 {
-    public class LoginModel
+    public class RefreshTokenLoginModel
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string UserId { get; set; }
+        public string RefreshToken { get; set; }
     }
 
-    public class LoginResponseModel
+    public class RefreshTokenLoginResponseModel
     {
         public string AccessToken { get; set; }
-        public string RefreshToken { get; set; }
     }
 }

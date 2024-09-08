@@ -9,6 +9,7 @@ namespace Application.Common
     public class JwtConfiguration
     {
         public string SecretKey { get; set; }
+        public int RefreshTokenExpireHours { get; set; }
     }
 
     public class SmtpConfiguration

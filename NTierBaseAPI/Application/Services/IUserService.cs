@@ -86,5 +86,12 @@ namespace Application.Services
         /// <param name="model"></param>
         /// <returns></returns>
         Task<CreateChangeEmailTokenResponseModel> CreateChangeEmailToken(CreateChangeEmailTokenModel model);
+
+        /// <summary>
+        /// Login with refresh token
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<RefreshTokenLoginResponseModel> LoginWithRefreshToken(RefreshTokenLoginModel model);
     }
 }

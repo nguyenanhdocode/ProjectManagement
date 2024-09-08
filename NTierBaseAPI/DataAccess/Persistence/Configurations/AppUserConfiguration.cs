@@ -29,6 +29,10 @@ namespace DataAccess.Persistence.Configurations
 
             builder.HasOne(p => p.Avatar).WithOne(p => p.Avatar);
 
+            builder.Property(p => p.RefreshToken).IsRequired(false);
+
+            builder.Property(p => p.RefreshTokenExpires).IsRequired(false);
+
             builder.Navigation(p => p.Avatar).AutoInclude();
         }
     }

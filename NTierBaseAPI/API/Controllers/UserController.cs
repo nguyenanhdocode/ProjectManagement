@@ -112,5 +112,13 @@ namespace API.Controllers
             await _userService.ChangeEmail(model);
             return Ok(ApiResult<object?>.Success(null));
         }
+
+        [HttpPost]
+        [Route("refresh-token/authenticate")]
+        public async Task<IActionResult> LoginWithRefreshToken(RefreshTokenLoginModel model)
+        {
+            return Ok(ApiResult<RefreshTokenLoginResponseModel>
+                .Success(await _userService.LoginWithRefreshToken(model)));
+        }
     }
 }

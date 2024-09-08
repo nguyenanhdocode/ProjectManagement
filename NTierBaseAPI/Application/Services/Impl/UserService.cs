@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Data;
 using IsolationLevel = System.Transactions.IsolationLevel;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services.Impl
 {
@@ -34,6 +35,7 @@ namespace Application.Services.Impl
         private ITemplateService _templateService;
         private IClaimService _claimService;
         private IUnitOfWork _uow;
+        private JwtConfiguration _jwtConfiguration;
 
         public UserService(IMapper mapper
             , UserManager<AppUser> userManager
@@ -42,7 +44,8 @@ namespace Application.Services.Impl
             , IEmailService emailService
             , ITemplateService templateService
             , IClaimService claimService
-            , IUnitOfWork unitOfWork)
+            , IUnitOfWork unitOfWork
+            , IOptions<JwtConfiguration> jwtConfiguration)
         {
             _mapper = mapper;
             _userManager = userManager;
@@ -52,6 +55,7 @@ namespace Application.Services.Impl
             _templateService = templateService;
             _claimService = claimService;
             _uow = unitOfWork;
+            _jwtConfiguration = jwtConfiguration.Value;
         }
 
         public async Task ChangeEmail(ChangeEmailModel model)
@@ -219,18 +223,38 @@ namespace Application.Services.Impl
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName.Equals(model.Username));
 
             if (user == null)
-                throw new BadRequestException("Username or password is incorrect");
+                throw new UnauthorizeException("Username or password is incorrect");
 
             var signInResult = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
 
             if (!signInResult.Succeeded)
-                throw new BadRequestException("Username or password is incorrect");
+                throw new UnauthorizeException("Username or password is incorrect");
 
             var token = JwtHelper.GenerateToken(user, _configuration);
 
+            user.RefreshToken = Guid.NewGuid().ToString();
+            user.RefreshTokenExpires = DateTime.UtcNow.AddHours(_jwtConfiguration.RefreshTokenExpireHours);
+            await _userManager.UpdateAsync(user);
+
             return new LoginResponseModel
             {
-                Token = token
+                RefreshToken = user.RefreshToken,
+                AccessToken = token
+            };
+        }
+
+        public async Task<RefreshTokenLoginResponseModel> LoginWithRefreshToken(RefreshTokenLoginModel model)
+        {
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            bool canSignIn = await _signInManager.CanSignInAsync(user);
+            if (!canSignIn)
+                throw new UnauthorizeException("Sign-in failed");
+
+            string token = JwtHelper.GenerateToken(user, _configuration);
+
+            return new RefreshTokenLoginResponseModel
+            {
+                AccessToken = token
             };
         }
 
