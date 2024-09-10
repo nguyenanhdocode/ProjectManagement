@@ -34,19 +34,27 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Route("files")]
+        [Authorize]
+        public async Task<IActionResult> Create([FromForm] CreateAssetModel model)
+        {
+            return Ok(ApiResult<CreateAssetResponseModel>.Success(await _assetService.Upload(model)));
+        }
+
+        [HttpPost]
         [Route("images")]
         [Authorize]
-        public async Task<IActionResult> UploadImage([FromForm] UploadImageModel model)
+        public async Task<IActionResult> UploadImage([FromForm] CreateImageModel model)
         {
-            return Ok(ApiResult<UploadImageResponseModel>.Success(await _assetService.UploadImage(model)));
+            return Ok(ApiResult<CreateAssetResponseModel>.Success(await _assetService.UploadImage(model)));
         }
 
         [HttpDelete]
-        [Route("images/{publicId}")]
+        [Route("{id}")]
         [Authorize]
-        public async Task<IActionResult> DeleteAsset(string publicId)
+        public async Task<IActionResult> DeleteAsset(Guid id)
         {
-            await _assetService.DeleteAsset(publicId);
+            await _assetService.DeleteAsset(id);
             return Ok(ApiResult<object?>.Success(null));
         }
 
@@ -54,15 +62,15 @@ namespace API.Controllers
         [Authorize]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(ApiResult<List<AssetReponseModel>>.Success(await _assetService.GetAll()));
+            return Ok(ApiResult<List<ViewAssetModel>>.Success(await _assetService.GetAll()));
         }
 
-        [HttpGet]
-        [Route("test")]
-        public async Task<IActionResult> Get()
-        {
-            AppUser user = await _userManager.FindByIdAsync(_claimService.GetUserId());
-            return Ok(await _userManager.ChangeEmailAsync(user, "nguyen@gmail.com", "CfDJ8OilTr1Cv4BEiEZo9eDuea1kZrpo9e9uOiqs9IaoSNiXUxn2QVkHtmadzR4Fc+H+mh6Z9U6daYcmgmlrtnT/Eo9bcQ1MhzpNubvHvO9rYFFcaLe7qxRPEfSEmhOpCZHZGOpc95L924Yb2ykAWgXz/1cn588GSuf3bdXc5EwpRfvtZd2D27u0ErotC4dT6sw64LhXU5t+iOvE3sIBD/L9wKAOCxRDSnxW4DbfgCFhMUzpis3IZ7kb6EhHBUCFzBM/7w=="));
-        }
+        //[HttpGet]
+        //[Route("test")]
+        //public async Task<IActionResult> Get()
+        //{
+        //    AppUser user = await _userManager.FindByIdAsync(_claimService.GetUserId());
+        //    return Ok(await _userManager.ChangeEmailAsync(user, "nguyen@gmail.com", "CfDJ8OilTr1Cv4BEiEZo9eDuea1kZrpo9e9uOiqs9IaoSNiXUxn2QVkHtmadzR4Fc+H+mh6Z9U6daYcmgmlrtnT/Eo9bcQ1MhzpNubvHvO9rYFFcaLe7qxRPEfSEmhOpCZHZGOpc95L924Yb2ykAWgXz/1cn588GSuf3bdXc5EwpRfvtZd2D27u0ErotC4dT6sw64LhXU5t+iOvE3sIBD/L9wKAOCxRDSnxW4DbfgCFhMUzpis3IZ7kb6EhHBUCFzBM/7w=="));
+        //}
     }
 }

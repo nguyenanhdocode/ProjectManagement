@@ -3,6 +3,7 @@ using Application.MappingProfiles;
 using Application.Services;
 using Application.Services.DevImpl;
 using Application.Services.Impl;
+using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,13 +22,15 @@ namespace Application
             services.Configure<JwtConfiguration>(configuration.GetSection("JwtConfiguration"));
             services.Configure<SmtpConfiguration>(configuration.GetSection("SmtpConfiguration"));
             services.Configure<CloudinaryConfiguration>(configuration.GetSection("CloudinaryConfiguration"));
+            services.Configure<StaticConfiguration>(configuration.GetSection("StaticConfiguration"));
 
             services.AddAutoMapper(typeof(IMappingProfilesMarker));
             
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITemplateService, TemplateService>();
-            services.AddScoped<IAssetService, AssetService>();
+            services.AddScoped<IAssetService, FileService>();
             services.AddScoped<IClaimService, ClaimService>();
+            services.AddScoped<IProjectService, ProjectService>();
 
             if (env.IsProduction())
                 services.AddScoped<IEmailService, EmailService>();

@@ -21,10 +21,12 @@ namespace DataAccess.UnifOfWork.Impl
 
         public AppDbContext DbContext { get; }
 
-        public IBaseRepository<Asset> AssetRepository { get; set; }
+        public IAssetRepository AssetRepository { get; set; }
+        public IProjectRepository ProjectRepository { get; set; }
 
         public UnitOfWork(AppDbContext dbContext
-            , IBaseRepository<Asset> assetRepo
+            , IAssetRepository assetRepo
+            , IProjectRepository projectRepository
             , IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
@@ -32,6 +34,9 @@ namespace DataAccess.UnifOfWork.Impl
 
             AssetRepository = assetRepo;
             AssetRepository.Dbcontext = DbContext;
+
+            ProjectRepository = projectRepository;
+            ProjectRepository.Dbcontext = DbContext;
         }
 
         public async Task<int> SaveChangesAsync()

@@ -16,26 +16,26 @@ namespace Application.Services
         /// </summary>
         /// <param name="files"></param>
         /// <returns></returns>
-        Task<UploadResult> Upload(Stream stream);
+        Task<CreateAssetResponseModel> Upload(CreateAssetModel model);
 
         /// <summary>
         /// Upload image
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<UploadImageResponseModel> UploadImage(UploadImageModel model);
+        Task<CreateAssetResponseModel> UploadImage(CreateImageModel model);
 
         /// <summary>
         /// Delete asset
         /// </summary>
         /// <param name="publicId"></param>
         /// <returns></returns>
-        Task DeleteAsset(string publicId);
+        Task DeleteAsset(Guid publicId);
 
         /// <summary>
         /// Get all
         /// </summary>
         /// <returns></returns>
-        Task<List<AssetReponseModel>> GetAll();
+        Task<List<ViewAssetModel>> GetAll();
     }
 }

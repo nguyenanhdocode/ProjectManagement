@@ -14,11 +14,13 @@ namespace DataAccess.Repositories
         DbSet<T> DbSet { get; }
         AppDbContext Dbcontext { get; set; }
 
-        Task<List<T?>> GetAllAsync();
+        Task<List<T>> GetAllAsync();
 
-        Task<List<T?>> GetManyAsync(Expression<Func<T, bool>> expression);
+        Task<List<T>> GetManyAsync(Expression<Func<T, bool>> expression);
 
         Task<T?> GetByIdAsync(string id);
+
+        Task<T?> GetByIdAsync(Guid id);
 
         Task<T?> Get(Expression<Func<T, bool>> expression);
 
@@ -26,6 +28,6 @@ namespace DataAccess.Repositories
 
         void Delete(T entity);
 
-        Task Update(T entity);
+        void Update(T entity);
     }
 }

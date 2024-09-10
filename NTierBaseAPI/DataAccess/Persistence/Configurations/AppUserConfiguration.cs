@@ -27,7 +27,7 @@ namespace DataAccess.Persistence.Configurations
 
             builder.Property(p => p.CreatedDate).HasDefaultValue(DateTime.UtcNow);
 
-            builder.HasOne(p => p.Avatar).WithOne(p => p.Avatar);
+            builder.HasOne(p => p.Avatar).WithOne(p => p.AvatarUser);
 
             builder.Property(p => p.RefreshToken).IsRequired(false);
 

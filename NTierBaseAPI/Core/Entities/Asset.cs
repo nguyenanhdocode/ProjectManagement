@@ -9,13 +9,15 @@ namespace Core.Entities
 {
     public class Asset : BaseEntity
     {
-        public string Path { get; set; }
         public string AssetId { get; set; }
+        public string RelativePath { get; set; }
         public DateTime CreatedDate { get; set; }
         public string Type { get; set; }
         public string? CreatedUserId { get; set; }
+        public string FileName { get; set; }
+        public double Size { get; set; }
         public AppUser CreatedUser { get; set; }
-        public AppUser Avatar { get; set; }
+        public AppUser AvatarUser { get; set; }
         public ICollection<ProjectAsset> ProjectAssets { get; set; }
         public ICollection<TaskAsset> TaskAssets { get; set; }
     }

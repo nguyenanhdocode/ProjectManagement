@@ -28,9 +28,10 @@ namespace DataAccess
             services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AppDbContext>();
 
-            //services.AddScoped<IUserStore<AppUser>, CustomUserStore>();
+            services.AddScoped<IAssetRepository, AssetRepository>();
+            services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
 
-            services.AddScoped<IBaseRepository<Asset>, BaseRepository<Asset>>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.Configure<IdentityOptions>(options =>

@@ -15,14 +15,18 @@ namespace DataAccess.Persistence.Configurations
         {
             builder.HasKey(p => p.Id);
             builder.Property(p => p.Id).HasDefaultValue(Guid.NewGuid());
-            builder.Property(p => p.Path).IsRequired();
+            builder.Property(p => p.RelativePath).IsRequired();
             builder.Property(p => p.AssetId).IsRequired();
             builder.Property(p => p.CreatedUserId).HasMaxLength(450).IsRequired(false);
             builder.Property(p => p.CreatedDate).HasDefaultValue(DateTime.UtcNow);
             builder.Property(p => p.Type).IsRequired().HasColumnType("varchar(100)");
+            builder.Property(p => p.FileName).IsRequired().HasColumnType("varchar(256)");
+            builder.Property(p => p.Size).IsRequired();
 
             builder.HasOne(p => p.CreatedUser).WithMany(p => p.Assets).HasForeignKey(p => p.CreatedUserId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Navigation(p => p.AvatarUser).AutoInclude();
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Application.Common
         public int Port { get; set; }
         public string SenderName { get; set; }
         public string SenderEmail { get; set; }
-        public string Username { get; set;}
+        public string Username { get; set; }
         public string Password { get; set; }
     }
 
@@ -26,5 +26,12 @@ namespace Application.Common
     {
         public string Url { get; set; }
         public string ViewImageUrl { get; set; }
+    }
+
+    public class StaticConfiguration
+    {
+        public string BaseDir { get; set; }
+        public string UploadDir { get; set; }
+        public string StaticUrl { get; set; }
     }
 }

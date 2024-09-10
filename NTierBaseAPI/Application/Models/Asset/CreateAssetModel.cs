@@ -9,14 +9,17 @@ using System.Threading.Tasks;
 
 namespace Application.Models.Asset
 {
-    public class UploadImageModel
+    public class CreateAssetModel
     {
         public IFormFile File { get; set; }
+        public string? CustomId { get; set; }
     }
 
-    public class UploadImageResponseModel
+    public class CreateAssetResponseModel
     {
-        public string PublicId { get; set; }
-        public string SecureUrl { get; set; }
+        public string Id { get; set; }
+        public string AssetId { get; set; }
+        public string Path { get; set; }
+        public string Url { get; set; }
     }
 }

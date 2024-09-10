@@ -149,12 +149,6 @@ namespace Application.Services.Impl
 
                     await _emailService.SendEmailAsync(new EmailMessage(model.Email, body, "Activate account"));
 
-                    await _uow.AssetRepository.Add(new Asset
-                    {
-                        AssetId = Guid.NewGuid().ToString(),
-                        Path = "abc",
-                        Type = "Image"
-                    });
                     await _uow.SaveChangesAsync();
 
                     string newId = (await _userManager.FindByEmailAsync(model.Email)).Id;

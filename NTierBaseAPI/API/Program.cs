@@ -6,6 +6,8 @@ using FluentValidation;
 using Application.Validators;
 using API.Filters;
 using API;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +30,10 @@ builder.Services.AddCors(p => p.AddPolicy("Default", builder =>
 {
     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 }));
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressInferBindingSourcesForParameters = true;
+});
 
 var app = builder.Build();
 
@@ -39,6 +45,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath
+        , builder.Configuration["StaticConfiguration:BaseDir"]
+        , builder.Configuration["StaticConfiguration:UploadDir"])),
+    RequestPath = builder.Configuration["StaticConfiguration:StaticUrl"]
+});
 
 app.UseCors("Default");
 

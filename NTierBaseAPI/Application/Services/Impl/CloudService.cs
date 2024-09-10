@@ -19,7 +19,7 @@ using System.Transactions;
 
 namespace Application.Services.Impl
 {
-    public class AssetService : IAssetService
+    public class CloudService : IAssetService
     {
         private Common.CloudinaryConfiguration _cloudinaryConfiguration;
         private Cloudinary cloudinary;
@@ -27,7 +27,7 @@ namespace Application.Services.Impl
         private IClaimService _claimService;
         private IMapper _mapper;
 
-        public AssetService(IOptions<Common.CloudinaryConfiguration> cloudinaryConfiguration
+        public CloudService(IOptions<Common.CloudinaryConfiguration> cloudinaryConfiguration
             , IUnitOfWork unitOfWork
             , IClaimService claimService
             , IMapper mapper)
@@ -76,24 +76,33 @@ namespace Application.Services.Impl
             }
         }
 
-        public async Task<List<AssetReponseModel>> GetAll()
+        public async Task<List<ViewAssetModel>> GetAll()
         {
             string userId = _claimService.GetUserId();
             var result = await _uow.AssetRepository.GetManyAsync(p => p.CreatedUserId.Equals(userId));
 
-            return _mapper.Map<List<AssetReponseModel>>(result);
+            return _mapper.Map<List<ViewAssetModel>>(result);
         }
 
-        public async Task<UploadResult> Upload(Stream stream)
+        public async Task<CreateAssetResponseModel> Upload(CreateAssetModel model)
         {
+            using var stream = new MemoryStream();
+            await model.File.CopyToAsync(stream);
+
             var uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(Guid.NewGuid().ToString(), stream)
             };
-            return await cloudinary.UploadAsync(uploadParams);
+            var result = await cloudinary.UploadAsync(uploadParams);
+
+            return new CreateAssetResponseModel
+            {
+                AssetId = result.AssetId,
+                Url = result.SecureUrl.AbsolutePath
+            };
         }
 
-        public async Task<UploadImageResponseModel> UploadImage(UploadImageModel model)
+        public async Task<CreateImageResponseModel> UploadImage(CreateImageModel model)
         {
             try
             {
@@ -106,7 +115,7 @@ namespace Application.Services.Impl
                     var asset = new Asset
                     {
                         AssetId = assetId,
-                        Path = $"{_cloudinaryConfiguration.ViewImageUrl}/{assetId}{fileFormat}",
+                        RelativePath = $"{_cloudinaryConfiguration.ViewImageUrl}/{assetId}{fileFormat}",
                         CreatedUserId = _claimService.FindByKey(ClaimTypes.NameIdentifier),
                         Type = AssetTypes.Image
                     };
@@ -132,10 +141,10 @@ namespace Application.Services.Impl
 
                     tran.Complete();
 
-                    return new UploadImageResponseModel
+                    return new CreateImageResponseModel
                     {
-                        PublicId = uploadResult.PublicId,
-                        SecureUrl = asset.Path,
+                        AssetId = uploadResult.PublicId,
+                        Url = asset.RelativePath,
                     };
                 }
             }

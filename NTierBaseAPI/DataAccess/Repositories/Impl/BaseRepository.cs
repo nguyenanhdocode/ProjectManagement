@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,7 +45,24 @@ namespace DataAccess.Repositories.Impl
 
         public async Task<T?> GetByIdAsync(string id)
         {
-            return await DbSet.FirstOrDefaultAsync(p => ((string)p.GetType().GetProperty("Id").GetValue(p) == id));
+            var param = Expression.Parameter(typeof(T));
+            var left = Expression.Property(param, "Id");
+            var right = Expression.Constant(id);
+            var equal = Expression.Equal(left, right);
+            var expression = Expression.Lambda<Func<T, bool>>(equal, param);
+
+            return await DbSet.SingleOrDefaultAsync(expression);
+        }
+
+        public async Task<T?> GetByIdAsync(Guid id)
+        {
+            var param = Expression.Parameter(typeof(T));
+            var left = Expression.Property(param, "Id");
+            var right = Expression.Constant(id);
+            var equal = Expression.Equal(left, right);
+            var expression = Expression.Lambda<Func<T, bool>>(equal, param);
+
+            return await DbSet.SingleOrDefaultAsync(expression);
         }
 
         public async Task<List<T>> GetManyAsync(Expression<Func<T, bool>> expression)
@@ -51,9 +70,9 @@ namespace DataAccess.Repositories.Impl
             return await DbSet.Where(expression).ToListAsync();
         }
 
-        public Task Update(T entity)
+        public void Update(T entity)
         {
-            throw new NotImplementedException();
+            DbSet.Update(entity);
         }
     }
 }

@@ -13,7 +13,7 @@ using System.Transactions;
 
 namespace Application.Validators.Asset
 {
-    public class UploadImageModelValidator : AbstractValidator<UploadImageModel>
+    public class UploadImageModelValidator : AbstractValidator<CreateImageModel>
     {
         public UploadImageModelValidator()
         {

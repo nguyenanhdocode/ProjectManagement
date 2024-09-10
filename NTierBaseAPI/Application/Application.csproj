@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Services\Impl\CloudService.cs" />
+  </ItemGroup>
+
       <ItemGroup>
         <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
       </ItemGroup>

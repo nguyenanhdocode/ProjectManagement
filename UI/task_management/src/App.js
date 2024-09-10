@@ -15,7 +15,6 @@ import BackdropManager from './Utils/BackdropManager';
 import API, { bearerRequest, endpoints, setBackdropDispatch } from './Config/API'
 import StartPage from './Components/Workspace/StartPage';
 import cookie from 'react-cookies';
-import { socket } from './socket';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
 import Rooms from './Components/Workspace/Rooms';
 import { Chat } from '@mui/icons-material';
@@ -49,24 +48,15 @@ function App() {
     //#endregion
 
     //#region Methods
-    function onConnect() {
-        const accessToken = cookie.load('access_token');
-        socket.emit('authenticate', { accessToken: accessToken });
-    }
-
-    function authenticated() {
-
-    }
+    
     //#endregion
 
     //#region Hooks
     useEffect(() => {
-        socket.on('connect', onConnect);
     }, []);
     //#endregion
 
     return (
-        <SocketContext.Provider value={{ socket, isSocketAuth }}>
             <NotificationContext.Provider value={{ notifications, notificationManager }}>
                 <BackdropContext.Provider value={{ showBackdrop, backdropManager }}>
                     <UserContext.Provider value={{ user, userDispatch }}>
@@ -93,7 +83,6 @@ function App() {
                     </UserContext.Provider>
                 </BackdropContext.Provider>
             </NotificationContext.Provider>
-        </SocketContext.Provider >
     );
 }
 

@@ -11,7 +11,8 @@ namespace DataAccess.UnifOfWork
 {
     public interface IUnitOfWork
     {
-        public IBaseRepository<Asset> AssetRepository { get; set; }
+        public IAssetRepository AssetRepository { get; set; }
+        public IProjectRepository ProjectRepository { get; set; }
         AppDbContext DbContext { get; }
         Task<int> SaveChangesAsync();
     }

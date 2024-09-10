@@ -4,6 +4,7 @@ using DataAccess.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240909133224_0003")]
+    partial class _0003
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -95,7 +97,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2024, 9, 10, 12, 59, 6, 574, DateTimeKind.Utc).AddTicks(7843));
+                        .HasDefaultValue(new DateTime(2024, 9, 9, 13, 32, 24, 40, DateTimeKind.Utc).AddTicks(4703));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -176,7 +178,7 @@ namespace DataAccess.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("4b6ac5e7-7b10-4fbe-a754-cce78e85bcf9"));
+                        .HasDefaultValue(new Guid("b544f161-0500-4291-9956-7434a8a7dd8d"));
 
                     b.Property<string>("AssetId")
                         .IsRequired()
@@ -185,7 +187,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2024, 9, 10, 12, 59, 6, 576, DateTimeKind.Utc).AddTicks(8590));
+                        .HasDefaultValue(new DateTime(2024, 9, 9, 13, 32, 24, 42, DateTimeKind.Utc).AddTicks(1019));
 
                     b.Property<string>("CreatedUserId")
                         .HasMaxLength(450)
@@ -193,14 +195,11 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasColumnType("varchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RelativePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<double>("Size")
-                        .HasColumnType("float");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -265,7 +264,7 @@ namespace DataAccess.Migrations
 
                     b.HasIndex("AssetId");
 
-                    b.ToTable("ProjectAssets");
+                    b.ToTable("ProjectAsset");
                 });
 
             modelBuilder.Entity("Core.Entities.ProjectMember", b =>
@@ -483,7 +482,7 @@ namespace DataAccess.Migrations
             modelBuilder.Entity("Core.Entities.AppUser", b =>
                 {
                     b.HasOne("Core.Entities.Asset", "Avatar")
-                        .WithOne("AvatarUser")
+                        .WithOne("Avatar")
                         .HasForeignKey("Core.Entities.AppUser", "AvatarId");
 
                     b.Navigation("Avatar");
@@ -653,7 +652,7 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Core.Entities.Asset", b =>
                 {
-                    b.Navigation("AvatarUser")
+                    b.Navigation("Avatar")
                         .IsRequired();
 
                     b.Navigation("ProjectAssets");

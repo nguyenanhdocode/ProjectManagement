@@ -20,6 +20,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import cookie from 'react-cookies';
 import { useNavigate } from 'react-router-dom';
 import { endpoints } from '../../Config/API';
+import { HttpStatusCode } from 'axios';
 
 export default function Login() {
 
@@ -64,9 +65,8 @@ export default function Login() {
             const profile = await loadProfile();
             userDispatch({type: 'login', payload: profile});
             cookie.save('user', profile, { path: '/' });
-            nav('/workspace');
         } catch (error) {
-            if (error.code === 401) {
+            if (error.code === HttpStatusCode.Unauthorized) {
                 notificationManager.showError(t('user.loginFailed'))
             }
         }
