@@ -19,13 +19,14 @@ namespace Core.Entities
         public string ProjectId { get; set; }
         public string ParentId { get; set; }
         public string PreviousTaskId { get; set; }
-        public AppUser CreatedUser { get; set; }
-        public AppUser AssignedToUser { get; set; }
-        public Project Project { get; set; }
-        public AppTask Parent {  get; set; }
-        public AppTask PreviousTask { get; set; }
-        public ICollection<AppTask> SubTasks { get; set; }
-        public ICollection<AppTask> NextTasks { get; set; }
-        public ICollection<TaskAsset> TaskAssets { get; set; }
+        public int Status { get; set; }
+        public virtual AppUser CreatedUser { get; set; }
+        public virtual AppUser AssignedToUser { get; set; }
+        public virtual Project Project { get; set; }
+        public virtual AppTask Parent {  get; set; }
+        public virtual AppTask PreviousTask { get; set; }
+        public virtual ICollection<AppTask> SubTasks { get; set; }
+        public virtual ICollection<AppTask> NextTasks { get; set; }
+        public virtual ICollection<TaskAsset> TaskAssets { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace DataAccess.UnifOfWork
     {
         public IAssetRepository AssetRepository { get; set; }
         public IProjectRepository ProjectRepository { get; set; }
+        public ITaskRepository TaskRepository { get; set; }
         AppDbContext DbContext { get; }
         Task<int> SaveChangesAsync();
     }

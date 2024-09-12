@@ -1,5 +1,6 @@
 ﻿using Application.Models.Asset;
 using Application.Models.Project;
+using Application.Validators.Project;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,5 +45,19 @@ namespace Application.Services
         /// <param name="model"></param>
         /// <returns></returns>
         Task Update(UpdateProjectModel model);
+
+        /// <summary>
+        /// Add member to project
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task AddMember(AddProjectMemeberModel model);
+
+        /// <summary>
+        /// Check if is user join to project
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task IsUserJoinToProject(IsUserJoinToProjectModel model);
     }
 }

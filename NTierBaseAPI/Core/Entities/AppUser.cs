@@ -13,16 +13,16 @@ namespace Core.Entities
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public Guid? AvatarId { get; set; }
-        public Asset Avatar { get; set; }
+        public virtual Asset Avatar { get; set; }
         public DateTime CreatedDate { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpires { get; set;}
 
-        public ICollection<Asset> Assets { get; set; }
-        public ICollection<Project> Projects { get; set; }
-        public ICollection<Project> ManageProjects { get; set; }
-        public ICollection<ProjectMember> ProjectMembers { get; set; }
-        public ICollection<AppTask> AppTasks { get; set; }
-        public ICollection<AppTask> AssignedTasks { get; set; }
+        public virtual ICollection<Asset> Assets { get; set; }
+        public virtual ICollection<Project> Projects { get; set; }
+        public virtual ICollection<Project> ManageProjects { get; set; }
+        public virtual ICollection<ProjectMember> ProjectMembers { get; set; }
+        public virtual ICollection<AppTask> AppTasks { get; set; }
+        public virtual ICollection<AppTask> AssignedTasks { get; set; }
     }
 }

@@ -24,6 +24,7 @@ namespace DataAccess.Persistence
         public DbSet<Project> Projects { get; set; }
         public DbSet<AppTask> AppTasks { get; set; }
         public DbSet<ProjectAsset> ProjectAssets { get; set; }
+        public DbSet<ProjectMember> ProjectMembers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

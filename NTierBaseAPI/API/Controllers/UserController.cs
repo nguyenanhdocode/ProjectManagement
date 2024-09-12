@@ -34,7 +34,7 @@ namespace API.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Create(CreateUserModel model)
+        public async Task<IActionResult> Create([FromBody]CreateUserModel model)
         {
             return Ok(ApiResult<CreateUserResponseModel>.Success(await _userService.Create(model)));
         }

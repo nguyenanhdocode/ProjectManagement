@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,6 +20,15 @@ namespace DataAccess.Repositories.Impl
                 .ToListAsync();
 
             return projectAsset.Select(p => p.Asset).ToList();
+        }
+
+        public async Task<bool> IsUserJoinToProject(string projectId, string userId)
+        {
+            var projectMember = await Dbcontext.ProjectMembers
+                .SingleOrDefaultAsync(p => p.ProjectId.Equals(projectId)
+                && p.MemberId.Equals(userId));
+
+            return projectMember != null;
         }
 
         public async Task RemoveAssetOfProject(string projectId, Guid assetId)

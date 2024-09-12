@@ -23,7 +23,10 @@ namespace DataAccess
         {
             string connectionString = configuration.GetConnectionString("DbString");
 
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseLazyLoadingProxies().UseSqlServer(connectionString);
+            });
 
             services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AppDbContext>();

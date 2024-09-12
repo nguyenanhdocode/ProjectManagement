@@ -2,6 +2,7 @@
 using Application.Models.Asset;
 using Application.Models.Project;
 using Application.Services;
+using Application.Validators.Project;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.AccessControl;
@@ -21,7 +22,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create(CreateProjectModel model)
+        public async Task<IActionResult> Create([FromBody]CreateProjectModel model)
         {
             return Ok(ApiResult<CreateProjectResponseModel>.Success(await _projectService.Create(model)));
         }
@@ -55,9 +56,26 @@ namespace API.Controllers
         [HttpPut]
         [Route("{id}")]
         [Authorize]
-        public async Task<IActionResult> Update(UpdateProjectModel model)
+        public async Task<IActionResult> Update([FromBody]UpdateProjectModel model)
         {
             await _projectService.Update(model);
+            return Ok(ApiResult<object?>.Success(null));
+        }
+
+        [HttpPost]
+        [Route("{id}/members")]
+        [Authorize]
+        public async Task<IActionResult> AddProjectMemeber(AddProjectMemeberModel model)
+        {
+            await _projectService.AddMember(model);
+            return Ok(ApiResult<object?>.Success(null));
+        }
+
+        [HttpHead]
+        [Route("{projectId}/members/{userId}")]
+        public async Task<IActionResult> IsUserJoinToProject([FromRoute]IsUserJoinToProjectModel model)
+        {
+            await _projectService.IsUserJoinToProject(model);
             return Ok(ApiResult<object?>.Success(null));
         }
     }

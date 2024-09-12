@@ -17,10 +17,10 @@ namespace Core.Entities
         public DateTime CreatedDate { get; set; }
         public string CreatedUserId { get; set; }
         public string ManagerId { get; set; }
-        public AppUser CreatedUser { get; set; }
-        public AppUser Manager {  get; set; }
-        public ICollection<ProjectMember> ProjectMembers { get; set; }
-        public ICollection<ProjectAsset> ProjectAssets { get; set; }
-        public ICollection<AppTask> AppTasks { get; set; }
+        public virtual AppUser CreatedUser { get; set; }
+        public virtual AppUser Manager {  get; set; }
+        public virtual ICollection<ProjectMember> ProjectMembers { get; set; }
+        public virtual ICollection<ProjectAsset> ProjectAssets { get; set; }
+        public virtual ICollection<AppTask> AppTasks { get; set; }
     }
 }

@@ -31,6 +31,7 @@ namespace Application
             services.AddScoped<IAssetService, FileService>();
             services.AddScoped<IClaimService, ClaimService>();
             services.AddScoped<IProjectService, ProjectService>();
+            services.AddScoped<ITaskService, TaskService>();
 
             if (env.IsProduction())
                 services.AddScoped<IEmailService, EmailService>();

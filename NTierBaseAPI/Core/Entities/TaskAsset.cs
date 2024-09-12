@@ -10,7 +10,7 @@ namespace Core.Entities
     {
         public string TaskId { get; set; }
         public Guid AssetId { get; set; }
-        public AppTask Task { get; set; }
-        public Asset Asset { get; set; }
+        public virtual AppTask Task { get; set; }
+        public virtual Asset Asset { get; set; }
     }
 }

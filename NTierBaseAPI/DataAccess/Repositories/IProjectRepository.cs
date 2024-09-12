@@ -31,5 +31,12 @@ namespace DataAccess.Repositories
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task RemoveAssetsOfProject(string projectId);
+
+        /// <summary>
+        /// Check if is user join to project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        Task<bool> IsUserJoinToProject(string projectId, string userId);
     }
 }

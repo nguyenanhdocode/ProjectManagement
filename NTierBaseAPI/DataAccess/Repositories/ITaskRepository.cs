@@ -9,5 +9,11 @@ namespace DataAccess.Repositories
 {
     public interface ITaskRepository : IBaseRepository<AppTask>
     {
+        /// <summary>
+        /// Get task of project include NextTasks
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        Task<AppTask> GetTaskByIdWithNextTasks(string id);
     }
 }

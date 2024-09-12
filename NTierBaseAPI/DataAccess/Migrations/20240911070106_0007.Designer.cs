@@ -4,6 +4,7 @@ using DataAccess.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240911070106_0007")]
+    partial class _0007
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -62,11 +64,6 @@ namespace DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(11)");
 
-                    b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
                     b.HasKey("Id");
 
                     b.HasIndex("AssignedToUserId");
@@ -80,8 +77,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("AppTasks");
-
-                    b.HasCheckConstraint("CK_Task_Status", "Status >= 0 AND Status <= 3");
                 });
 
             modelBuilder.Entity("Core.Entities.AppUser", b =>
@@ -102,7 +97,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2024, 9, 11, 8, 42, 5, 258, DateTimeKind.Utc).AddTicks(8392));
+                        .HasDefaultValue(new DateTime(2024, 9, 11, 7, 1, 6, 416, DateTimeKind.Utc).AddTicks(5893));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -183,7 +178,7 @@ namespace DataAccess.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValue(new Guid("85e3363d-eccd-47e7-851d-f032f762775e"));
+                        .HasDefaultValue(new Guid("5ef88770-c7a7-45fa-bb93-64da6d541ef9"));
 
                     b.Property<string>("AssetId")
                         .IsRequired()
@@ -192,7 +187,7 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2024, 9, 11, 8, 42, 5, 261, DateTimeKind.Utc).AddTicks(539));
+                        .HasDefaultValue(new DateTime(2024, 9, 11, 7, 1, 6, 418, DateTimeKind.Utc).AddTicks(6368));
 
                     b.Property<string>("CreatedUserId")
                         .HasMaxLength(450)

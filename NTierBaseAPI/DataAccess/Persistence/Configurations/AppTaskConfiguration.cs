@@ -25,6 +25,9 @@ namespace DataAccess.Persistence.Configurations
             builder.Property(p => p.ProjectId).IsRequired().HasColumnType("varchar(11)");
             builder.Property(p => p.ParentId).IsRequired(false).HasColumnType("varchar(11)");
             builder.Property(p => p.PreviousTaskId).IsRequired(false).HasColumnType("varchar(11)");
+            builder.Property(p => p.Status).IsRequired().HasDefaultValue(0);
+            
+            builder.HasCheckConstraint("CK_Task_Status", "Status >= 0 AND Status <= 3");
 
             builder.HasOne(p => p.CreatedUser).WithMany(p => p.AppTasks)
                 .HasForeignKey(p => p.CreatedUserId).OnDelete(DeleteBehavior.Restrict);

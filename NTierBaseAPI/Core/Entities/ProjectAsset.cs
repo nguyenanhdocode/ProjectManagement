@@ -10,7 +10,7 @@ namespace Core.Entities
     {
         public string ProjectId { get; set; }
         public Guid AssetId { get; set; }
-        public Project Project { get; set; }
-        public Asset Asset { get; set; }
+        public virtual Project Project { get; set; }
+        public virtual Asset Asset { get; set; }
     }
 }

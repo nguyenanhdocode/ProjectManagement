@@ -2,6 +2,7 @@
 using Application.Helpers;
 using Application.Models.Asset;
 using Application.Models.Project;
+using Application.Validators.Project;
 using AutoMapper;
 using AutoMapper.Configuration.Conventions;
 using Core.Entities;
@@ -31,6 +32,30 @@ namespace Application.Services.Impl
             _claimService = claimService;
             _uow = unitOfWork;
             _assetService = assetService;
+        }
+
+        public async Task AddMember(AddProjectMemeberModel model)
+        {
+            var project = await _uow.ProjectRepository.GetByIdAsync(model.ProjectId);
+
+            if (project == null)
+                throw new NotFoundException("Project not found!");
+
+            if (!project.CreatedUserId.Equals(_claimService.GetUserId()))
+                throw new ForbiddenException();
+
+            project.ProjectMembers = new List<ProjectMember>
+            {
+                new ProjectMember
+                {
+                    ProjectId = model.ProjectId,
+                    MemberId = model.Body.UserId,
+                    JoinedDate = DateTime.UtcNow,
+                }
+            };
+
+            _uow.ProjectRepository.Update(project);
+            await _uow.SaveChangesAsync();
         }
 
         public async Task AddProjectAsset(AddProjectAssetModel model)
@@ -95,6 +120,13 @@ namespace Application.Services.Impl
         {
             var assets = await _projectRepository.GetAssetsOfProject(projectId);
             return _mapper.Map<List<ViewAssetModel>>(assets);
+        }
+
+        public async Task IsUserJoinToProject(IsUserJoinToProjectModel model)
+        {
+            bool isJoined = await _projectRepository.IsUserJoinToProject(model.ProjectId, model.UserId);
+            if (!isJoined)
+                throw new NotFoundException("User have not joined project");
         }
 
         public async Task RemoveAssetOfProject(RemoveAssetOfProjectModel model)
