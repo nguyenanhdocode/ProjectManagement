@@ -42,6 +42,7 @@ namespace API.Middlewares
                 ForbiddenException => StatusCodes.Status403Forbidden,
                 UnauthorizeException => StatusCodes.Status401Unauthorized,
                 UnprocessableEntityException => StatusCodes.Status422UnprocessableEntity,
+                ConflictExeception => StatusCodes.Status409Conflict,
                 _ => code
             };
 

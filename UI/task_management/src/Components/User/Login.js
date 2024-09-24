@@ -65,6 +65,8 @@ export default function Login() {
             const profile = await loadProfile();
             userDispatch({type: 'login', payload: profile});
             cookie.save('user', profile, { path: '/' });
+
+            nav('/projects');
         } catch (error) {
             if (error.code === HttpStatusCode.Unauthorized) {
                 notificationManager.showError(t('user.loginFailed'))

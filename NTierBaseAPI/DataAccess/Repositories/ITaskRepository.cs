@@ -15,5 +15,12 @@ namespace DataAccess.Repositories
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task<AppTask> GetTaskByIdWithNextTasks(string id);
+
+        /// <summary>
+        /// Get root task of task tree
+        /// </summary>
+        /// <param name="taskId"></param>
+        /// <returns></returns>
+        Task<AppTask?> GetRootTask(string taskId);
     }
 }

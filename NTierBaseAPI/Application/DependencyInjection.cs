@@ -23,6 +23,7 @@ namespace Application
             services.Configure<SmtpConfiguration>(configuration.GetSection("SmtpConfiguration"));
             services.Configure<CloudinaryConfiguration>(configuration.GetSection("CloudinaryConfiguration"));
             services.Configure<StaticConfiguration>(configuration.GetSection("StaticConfiguration"));
+            services.Configure<AppConfiguration>(configuration.GetSection("AppConfiguration"));
 
             services.AddAutoMapper(typeof(IMappingProfilesMarker));
             

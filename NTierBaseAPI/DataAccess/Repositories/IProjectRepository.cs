@@ -38,5 +38,12 @@ namespace DataAccess.Repositories
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task<bool> IsUserJoinToProject(string projectId, string userId);
+
+        /// <summary>
+        /// Get project members
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <returns></returns>
+        Task<List<AppUser>> GetProjectMembers(string projectId);
     }
 }

@@ -29,5 +29,7 @@ namespace DataAccess.Repositories
         void Delete(T entity);
 
         void Update(T entity);
+
+        void DeleteRange(IList<T> entities);
     }
 }

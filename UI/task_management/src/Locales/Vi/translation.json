@@ -2,7 +2,28 @@
     "common": {
         "search": "Tìm kiếm",
         "networkError": "Lỗi kết nối mạng.",
-        "e500": "Đã xảy ra lỗi, vui lòng thử lại sau."
+        "e500": "Đã xảy ra lỗi, vui lòng thử lại sau.",
+        "filter": "Bộ lọc",
+        "filterApplied": "Đang áp dụng bộ lọc",
+        "apply": "Áp dụng",
+        "close": "Đóng",
+        "time": "Thời gian",
+        "all": "Tất cả",
+        "beginDate": "Ngày bắt đầu",
+        "endDate": "Ngày kết thúc",
+        "reset": "Reset",
+        "from": "Từ",
+        "to": "Đến",
+        "createNew": "Tạo mới",
+        "name": "Tên",
+        "description": "Mô tả",
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "name.maxLength": "Chiều dài tên không lớn hơn 256 ký tự",
+        "id": "Mã",
+        "viewDetail": "Xem chi tiết",
+        "update": "Cập nhật",
+        "delete": "Xóa"
     },
     "user": {
         "signIn": "Đăng nhập",
@@ -26,10 +47,50 @@
         "email.existed": "Email đã được sử dụng." ,
         "continueGoogle": "Tiếp tục với Google",
         "haveAccount": "Bạn đã có tài khoản? Đăng nhập",
-        "loginFailed": "Thông tin đăng nhập không chính xác."
+        "loginFailed": "Thông tin đăng nhập không chính xác.",
+        "signOut": "Đăng xuất"
+    },
+
+    "asset": {
+        "asset": "Tài nguyên"
+    },
+
+    "project": {
+        "projects": "Dự án",
+        "projectMgt": "Quản lý dự án",
+        "joinRole": "Vai trò tham gia",
+        "manager": "Trưởng dự án",
+        "member": "Thành viên",
+        "name.required": "Vui lòng nhập tên dự án",
+        "beginDate.required": "Vui lòng chọn ngày bắt đầu",
+        "endDate.required": "Vui lòng chọn ngày kết thúc",
+        "endDate.valid": "Ngày kết thúc phải trễ hơn ngày bắt đầu",
+        "updated.success": "Cập nhật dự án thành công",
+        "created.success": "Tạo dự án thành công",
+        "create": "Tạo mới dự án",
+        "update": "Cập nhật dự án",
+        "overview": "Tổng quan dự án",
+        "taskAffected.alert": "Việc cập nhật sẽ ảnh hưởng đến các công việc bên trong dự án, vui lòng xem chi tiết sự thay đổi trước khi cập nhật."
     },
 
     "workspace": {
         
+    },
+
+    "task": {
+        "tasks": "Công việc",
+        "create": "Tạo công việc",
+        "update": "Cập nhật công việc",
+        "assignToUser": "Người phụ trách",
+        "previousTask": "Công việc trước",
+        "name.required": "Vui lòng nhập tên công việc",
+        "beginDate.required": "Vui lòng chọn ngày bắt đầu",
+        "endDate.required": "Vui lòng chọn ngày kết thúc",
+        "beginDate.mustLater": "Ngày bắt đầu phải từ sau {0}",
+        "endDate.mustLater": "Ngày kết thúc phải sau ngày bắt đầu công việc",
+        "updated.success": "Cập nhật công việc thành công",
+        "created.success": "Tạo công việc thành công",
+        "assignToUser.required": "Vui lòng chọn người phụ trách",
+        "endDate.mustBefore": "Ngày kết thúc phải nhỏ hơn hoặc bằng ngày {0}"
     }
 }

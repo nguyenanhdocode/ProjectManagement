@@ -205,11 +205,11 @@ namespace Application.Services.Impl
             return _mapper.Map<OwnProfileResponseModel>(user);
         }
 
-        public async Task<ProfileResponseModel> GetProfile(string id)
+        public async Task<ViewProfileModel> GetProfile(string id)
         {
             AppUser user = await _userManager.FindByIdAsync(id);
 
-            return _mapper.Map<ProfileResponseModel>(user);
+            return _mapper.Map<ViewProfileModel>(user);
         }
 
         public async Task<LoginResponseModel> Login(LoginModel model)

@@ -1,17 +1,11 @@
-﻿using Application.Common.Tree;
+﻿using Application.Common;
 using Application.Exceptions;
 using Application.Helpers;
 using Application.Models.Task;
 using AutoMapper;
-using AutoMapper.Configuration.Conventions;
 using Core.Entities;
 using DataAccess.UnifOfWork;
-using Org.BouncyCastle.Asn1.Cmp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Application.Services.Impl
 {
@@ -36,7 +30,7 @@ namespace Application.Services.Impl
 
             if (project == null)
                 throw new BadRequestException("Project not found!");
-            
+
             // Check if create user has joined project?
             string userId = _claimService.GetUserId();
             if (!await _uow.ProjectRepository.IsUserJoinToProject(model.ProjectId, userId)
@@ -56,7 +50,7 @@ namespace Application.Services.Impl
             bool isAssignedUserJoinProject = await _uow.ProjectRepository
                 .IsUserJoinToProject(model.ProjectId, model.AssignedToUserId);
 
-            if (!isAssignedUserJoinProject)
+            if (!isAssignedUserJoinProject && !project.ManagerId.Equals(_claimService.GetUserId()))
             {
                 throw new BadRequestException("Assigned user have not joined project");
             }
@@ -79,7 +73,7 @@ namespace Application.Services.Impl
             var task = _mapper.Map<AppTask>(model);
             string id = UniqueIdHelper.GenerateId(11);
 
-            while ((await _uow.TaskRepository.GetByIdAsync(task.Id) != null))
+            while ((await _uow.TaskRepository.GetByIdAsync(id)) != null)
             {
                 id = UniqueIdHelper.GenerateId(11);
             }
@@ -94,6 +88,69 @@ namespace Application.Services.Impl
             {
                 Id = task.Id
             };
+        }
+
+        public async Task<CreateSubtaskReponseModel> CreateSubTask(CreateSubtaskModel model)
+        {
+            var task = await _uow.TaskRepository.GetByIdAsync(model.TaskId);
+
+            if (task == null)
+                throw new NotFoundException("Task not found!");
+
+            if (task.PreviousTaskId != null)
+                throw new BadRequestException("Cannot create sub-task inside a sub-task");
+
+            if (DateTime.Compare(task.BeginDate, model.Body.BeginDate) > 0
+                || DateTime.Compare(task.EndDate, model.Body.EndDate) < 0)
+            {
+                throw new BadRequestException("BeginDate/EndDate of sub-task must be between BeginDate/EndDate of task");
+            }
+
+            if (!task.CreatedUserId.Equals(_claimService.GetUserId())
+                        && !task.Project.ManagerId.Equals(_claimService.GetUserId()))
+            {
+                throw new ForbiddenException();
+            }
+
+            string id = UniqueIdHelper.GenerateId(11);
+
+            while ((await _uow.TaskRepository.GetByIdAsync(id)) != null)
+            {
+                id = UniqueIdHelper.GenerateId(11);
+            }
+
+            var subTask = _mapper.Map<AppTask>(model.Body);
+            subTask.Id = id;
+            subTask.ProjectId = task.ProjectId;
+            subTask.ParentId = task.Id;
+            subTask.CreatedUserId = _claimService.GetUserId();
+
+            await _uow.TaskRepository.Add(subTask);
+            await _uow.SaveChangesAsync();
+
+            return new CreateSubtaskReponseModel { Id = subTask.Id };
+        }
+
+        public async Task Delete(string id)
+        {
+            var task = await _uow.TaskRepository.GetByIdAsync(id);
+            if (task == null)
+                throw new NotFoundException("Task is not found!");
+
+            if (!task.CreatedUserId.Equals(_claimService.GetUserId())
+                && !task.Project.ManagerId.Equals(_claimService.GetUserId()))
+            {
+                throw new ForbiddenException();
+            }
+
+            _uow.TaskRepository.DeleteRange(task.SubTasks.ToList());
+
+            task.NextTasks.Clear();
+            task.TaskAssets.Clear();
+            _uow.TaskRepository.Update(task);
+            _uow.TaskRepository.Delete(task);
+
+            await _uow.SaveChangesAsync();
         }
 
         public async Task<PreviewBeforeUpdateEndDateResponseModel> GetPreviewBeforeUpdateEndDate(
@@ -129,10 +186,9 @@ namespace Application.Services.Impl
             Queue<AppTask> queue = new Queue<AppTask>();
             queue.Enqueue(task);
 
-            Dictionary<AppTask, TaskDiffModel> nodeMap 
+            Dictionary<AppTask, TaskDiffModel> nodeMap
                 = new Dictionary<AppTask, TaskDiffModel>();
             nodeMap.Add(task, rootTaskDiff);
-
 
             while (queue.Count > 0)
             {
@@ -184,5 +240,165 @@ namespace Application.Services.Impl
             };
         }
 
+        public async Task<List<string>> Update(UpdateTaskModel model, bool updateEndDateOnly = false)
+        {
+
+            var task = await _uow.TaskRepository.GetByIdAsync(model.Id);
+
+            if (task == null)
+                throw new NotFoundException("Task not found!");
+
+            if (!task.CreatedUserId.Equals(_claimService.GetUserId())
+                && !task.Project.ManagerId.Equals(_claimService.GetUserId()))
+            {
+                throw new ForbiddenException();
+            }
+
+            if (DateTime.Compare(model.Body.BeginDate, task.BeginDate) != 0
+                && task.PreviousTaskId != null
+                && DateTime.Compare(model.Body.BeginDate, task.PreviousTask.EndDate) < 0)
+            {
+                throw new BadRequestException("BeginDate must be greater than or equal to EndDate of prev task");
+            }
+
+            if (DateTime.Compare(model.Body.BeginDate, task.Project.BeginDate) < 0)
+            {
+                throw new BadRequestException("BeginDate of task must be less than or equal to BeginDate of project");
+            }
+
+            if (DateTime.Compare(model.Body.EndDate, task.Project.EndDate) > 0)
+            {
+                throw new BadRequestException("EndDate of task must be less than or equal to EndDate of project");
+            }
+
+            if (!updateEndDateOnly)
+            {
+                if (!model.Body.AssignedToUserId.Equals(task.AssignedToUserId)
+                && !await _uow.ProjectRepository.IsUserJoinToProject(task.ProjectId, model.Body.AssignedToUserId))
+                {
+                    throw new BadRequestException("Assigned user have not joined project");
+                }
+
+                task.Name = model.Body.Name;
+                task.Note = model.Body.Note;
+                task.AssignedToUserId = model.Body.AssignedToUserId;
+            }
+
+            var timespan = model.Body.EndDate - task.EndDate;
+            var affectedTasks = new List<string>();
+
+            // Update subtasks
+            var subTasks = task.SubTasks;
+            if (subTasks != null)
+            {
+                foreach (var subTask in subTasks)
+                {
+                    subTask.BeginDate = subTask.BeginDate.Add(timespan);
+                    subTask.EndDate = subTask.EndDate.Add(timespan);
+
+                    _uow.TaskRepository.Update(subTask);
+                    await _uow.SaveChangesAsync();
+
+                    affectedTasks.Add(subTask.Id);
+                }
+            }
+
+            // Update references tasks
+            if (task.NextTasks.Count > 0)
+            {
+                // BFS
+                Queue<AppTask> queue = new Queue<AppTask>();
+                List<string> visited = new List<string>();
+
+                queue.Enqueue(task);
+                visited.Add(task.Id);
+
+                while (queue.Count > 0)
+                {
+                    var top = queue.Dequeue();
+                    top.BeginDate = top.BeginDate.Add(timespan);
+                    top.EndDate = top.EndDate.Add(timespan);
+
+                    // Update subtasks
+                    if (subTasks != null)
+                    {
+                        foreach (var subTask in subTasks)
+                        {
+                            subTask.BeginDate = subTask.BeginDate.Add(timespan);
+                            subTask.EndDate = subTask.EndDate.Add(timespan);
+
+                            _uow.TaskRepository.Update(subTask);
+                            await _uow.SaveChangesAsync();
+
+                            affectedTasks.Add(subTask.Id);
+                        }
+                    }
+
+                    if (DateTime.Compare(top.EndDate, task.Project.EndDate) > 0)
+                        throw new BadRequestException("EndDate of task must be less than or equal to EndDate of project");
+
+                    _uow.TaskRepository.Update(top);
+                    affectedTasks.Add(top.Id);
+
+                    var children = top.NextTasks;
+                    foreach (var item in children)
+                    {
+                        if (!visited.Contains(item.Id))
+                        {
+                            queue.Enqueue(item);
+                            visited.Add(item.Id);
+                        }
+                    }
+                }
+            }
+
+            await _uow.SaveChangesAsync();
+
+            return affectedTasks;
+        }
+
+        public async Task UpdateStatus(UpdateTaskStatusModel model)
+        {
+            var task = await _uow.TaskRepository.GetByIdAsync(model.Id);
+
+            if (task == null)
+                throw new NotFoundException("Task not found!");
+
+            if (!task.CreatedUserId.Equals(_claimService.GetUserId())
+                && !task.Project.ManagerId.Equals(_claimService.GetUserId()))
+            {
+                throw new ForbiddenException();
+            }
+
+            var rules = new Dictionary<AppTaskStatus, List<AppTaskStatus>>();
+            rules.Add(AppTaskStatus.Unfulfilled, new List<AppTaskStatus> { AppTaskStatus.Doing });
+            rules.Add(AppTaskStatus.Doing, new List<AppTaskStatus> { AppTaskStatus.Done, AppTaskStatus.Suspend });
+            rules.Add(AppTaskStatus.Done, new List<AppTaskStatus> { AppTaskStatus.Doing });
+            rules.Add(AppTaskStatus.Suspend, new List<AppTaskStatus> { AppTaskStatus.Doing });
+
+            var allowedNewStatus = new List<AppTaskStatus>();
+            bool keyExisted = rules.TryGetValue((AppTaskStatus)task.Status, out allowedNewStatus);
+
+            if (!keyExisted || allowedNewStatus == null 
+                || !allowedNewStatus.Any(p => p.Equals(model.Body.Status)))
+            {
+                throw new BadRequestException("New status is not allowed on this task!");
+            }
+
+            if (task.PreviousTask != null)
+            {
+                if (!task.PreviousTask.Status.Equals(AppTaskStatus.Done) 
+                    && model.Body.Status.Equals(AppTaskStatus.Doing))
+                {
+                    throw new BadRequestException("New status is not allowed on this task!");
+                }
+            }
+
+            task.Status = (int)model.Body.Status;
+
+            _uow.TaskRepository.Update(task);
+            await _uow.SaveChangesAsync();
+        }
     }
 }
+

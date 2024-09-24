@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Application.Models.User
 {
-    public class OwnProfileResponseModel : ProfileResponseModel
+    public class OwnProfileResponseModel : ViewProfileModel
     {
         public string Email { get; set; }
     }

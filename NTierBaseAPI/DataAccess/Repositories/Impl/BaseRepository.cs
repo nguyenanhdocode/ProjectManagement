@@ -33,6 +33,11 @@ namespace DataAccess.Repositories.Impl
             DbSet.Remove(entity);
         }
 
+        public void DeleteRange(IList<T> entities)
+        {
+            DbSet.RemoveRange(entities);
+        }
+
         public async Task<T?> Get(Expression<Func<T, bool>> expression)
         {
             return await DbSet.SingleOrDefaultAsync(expression);

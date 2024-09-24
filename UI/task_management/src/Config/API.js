@@ -1,4 +1,4 @@
-import axios, { Axios } from "axios";
+import axios, { Axios, HttpStatusCode } from "axios";
 import cookie from 'react-cookies'
 import { API_BASE_URL } from "./AppSettings";
 
@@ -53,7 +53,7 @@ export default function API(notificationManager, translate) {
                 const userId = cookie.load('user')?.id;
                 const res = await axios.create({ baseURL: API_BASE_URL })
                     .post(endpoints['refreshToken'], { userId, refreshToken });
-                cookie.save('access_token', res.data.result['accessToken'], {path: '/'});
+                cookie.save('access_token', res.data.result['accessToken'], { path: '/' });
                 originalRequest.headers.Authorization = `Bearer ${res.data.result['accessToken']}`;
 
                 return axios(originalRequest);
@@ -61,6 +61,8 @@ export default function API(notificationManager, translate) {
                 window.location = '/users/auth';
             }
         }
+
+        throw error;
     });
 
     return {
@@ -75,5 +77,15 @@ export const endpoints = {
     'login': 'api/users/authenticate',
     'getProfile': 'api/users/profile',
     'getJoinedRooms': 'api/users/me/joined-rooms',
-    'refreshToken': 'api/users/refresh-token/authenticate'
+    'refreshToken': 'api/users/refresh-token/authenticate',
+    'getAllProjects': 'api/projects',
+    'createProject': 'api/projects',
+    'updateProject': 'api/projects/{0}',
+    'updateProjectBeginDate': 'api/projects/{0}/begindate',
+    'getProject': 'api/projects/{0}',
+    'getProjectOverview': 'api/projects/{0}/overview',
+    'getTimeline': 'api/projects/{0}/timeline',
+    'getProjectMembers': 'api/projects/{0}/members',
+    'checkBeforeUpdateProjectBeginDate': 'api/projects/{0}/is-valid-before-update-begindate',
+    'createTask': 'api/tasks'
 };

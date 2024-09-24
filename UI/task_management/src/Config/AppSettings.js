@@ -15,5 +15,7 @@ export const rules =  {
         password: {
             pattern: '^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$'
         }
-    }
+    },
+    dateTimeFormat: 'DD/MM/YYYY HH:mm',
+    dateFormat: 'DD/MM/YYYY'
 }

@@ -2,7 +2,27 @@
     "common": {
         "search": "Search",
         "networkError": "Network error.",
-        "e500": "Something went wrong, please try again."
+        "e500": "Something went wrong, please try again.",
+        "filter": "Filter",
+        "filterApplied": "Filter applied",
+        "apply": "Apply",
+        "close": "Close",
+        "time": "Time",
+        "all": "All",
+        "beginDate": "Begin date",
+        "endDate": "End date",
+        "reset": "Reset",
+        "from": "From",
+        "to": "To",
+        "createNew": "Create new",
+        "name": "Name",
+        "description": "Description",
+        "save": "Save",
+        "cancel": "Cancel",
+        "id": "Id",
+        "viewDetail": "View detail",
+        "update": "Update",
+        "delete": "Delete"
     },
     "user": {
         "signIn": "Sign in",
@@ -26,6 +46,46 @@
         "email.existed": "Email address is already taken.",
         "continueGoogle": "Continue with google",
         "haveAccount": "Already have an account? Login",
-        "loginFailed": "Login failed."
+        "loginFailed": "Login failed.",
+        "signOut": "Sign out",
+        "name.maxLength": "Name length must be less than {0} characters"
+    },
+    "asset": {
+        "asset": "Asset"
+    },
+
+    "project": {
+        "projects": "Projects",
+        "projectMgt": "Project management",
+        "joinRole": "Join role",
+        "manager": "Manager",
+        "member": "Member",
+        "name.required": "Name is required",
+        "beginDate.required": "Begin date is required",
+        "endDate.required": "End date is required",
+        "endDate.valid": "End date must be later than begin date",
+        "updated.success": "Project update successful",
+        "created.success": "Project create successful",
+        "create": "Create new project",
+        "update": "Update project",
+        "overview": "Project overview",
+        "taskAffected.alert": "The update will affect the tasks inside the project, please review the change details before updating."
+    },
+
+    "task": {
+        "tasks": "Tasks",
+        "create": "Create new task",
+        "update": "Update task",
+        "assignToUser": "Assign to user",
+        "previousTask": "Previous task",
+        "name.required": "Name is required",
+        "beginDate.required": "Begin date is required",
+        "endDate.required": "End date is required",
+        "beginDate.mustLater": "Begin date must be later than or equal to {0}",
+        "endDate.mustLater": "End date must be later than begin date of task",
+        "updated.success": "Project update successful",
+        "created.success": "Project create successful",
+        "assignToUser.required": "Please select assigned user",
+        "endDate.mustBefore": "End date must be less than or equal to {0}"
     }
 }

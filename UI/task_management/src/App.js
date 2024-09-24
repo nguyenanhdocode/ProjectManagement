@@ -13,19 +13,22 @@ import NotificationManager from './Utils/NotificationManager';
 import NotificationContainer from './Components/Common/NotificationContainer';
 import BackdropManager from './Utils/BackdropManager';
 import API, { bearerRequest, endpoints, setBackdropDispatch } from './Config/API'
-import StartPage from './Components/Workspace/StartPage';
 import cookie from 'react-cookies';
 import FiberManualRecordIcon from '@mui/icons-material/FiberManualRecord';
-import Rooms from './Components/Workspace/Rooms';
 import { Chat } from '@mui/icons-material';
-import ChatBox from './Components/Chat/ChatBox';
-import Tasks from './Components/Chat/ChatBox';
 import { useTranslation } from 'react-i18next';
+import StartPage from './Components/Start/StartPage';
+import ProjectIndex from './Components/Project/ProjectIndex';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { viVN } from '@mui/x-date-pickers/locales';
+import 'dayjs/locale/vi';
+import ProjectDetail from './Components/Project/ProjectDetail';
 
 function App() {
 
     //#region States
-    const [themeMode, setThemeMode] = useState('light');
+    const [themeMode, setThemeMode] = useState('dark');
     const [notifications, notificationDispatch] = useReducer(NotificationReducer, []);
     const [showBackdrop, backdropDispatch] = useReducer(BackdropReducer, false);
     const [user, userDispatch] = useReducer(UserReducer, cookie.load('user'));
@@ -48,7 +51,7 @@ function App() {
     //#endregion
 
     //#region Methods
-    
+
     //#endregion
 
     //#region Hooks
@@ -57,18 +60,20 @@ function App() {
     //#endregion
 
     return (
+        <LocalizationProvider dateAdapter={AdapterDayjs} 
+        localeText={viVN.components.MuiLocalizationProvider.defaultProps.localeText}
+        adapterLocale='vi'>
             <NotificationContext.Provider value={{ notifications, notificationManager }}>
                 <BackdropContext.Provider value={{ showBackdrop, backdropManager }}>
                     <UserContext.Provider value={{ user, userDispatch }}>
-                        <APIContext.Provider value={{...api}}>
+                        <APIContext.Provider value={{ ...api }}>
                             <ThemeProvider theme={defaultTheme}>
                                 <BrowserRouter>
                                     <Routes>
                                         <Route path='users/auth' element={<Auth></Auth>}></Route>
-                                        <Route path='workspace' element={<StartPage></StartPage>}>
-                                            <Route path='rooms' element={<Rooms></Rooms>}>
-                                                <Route path=':code' element={<Tasks></Tasks>}></Route>
-                                            </Route>
+                                        <Route path='/' element={<StartPage></StartPage>}>
+                                            <Route path='projects' element={<ProjectIndex></ProjectIndex>}></Route>
+                                            <Route path='projects/:id' element={<ProjectDetail></ProjectDetail>}></Route>
                                         </Route>
                                     </Routes>
                                 </BrowserRouter>
@@ -83,6 +88,7 @@ function App() {
                     </UserContext.Provider>
                 </BackdropContext.Provider>
             </NotificationContext.Provider>
+        </LocalizationProvider>
     );
 }
 

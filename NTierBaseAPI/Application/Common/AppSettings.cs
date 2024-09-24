@@ -34,4 +34,9 @@ namespace Application.Common
         public string UploadDir { get; set; }
         public string StaticUrl { get; set; }
     }
+
+    public class AppConfiguration
+    {
+        public string Domain { get; set; }
+    }
 }

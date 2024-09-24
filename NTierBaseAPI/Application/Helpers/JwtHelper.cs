@@ -16,6 +16,7 @@ namespace Application.Helpers
         public static string GenerateToken(AppUser user, IConfiguration configuration)
         {
             var secretKey = configuration.GetValue<string>("JwtConfiguration:SecretKey");
+            int accessTokenExpireHours = configuration.GetValue<int>("JwtConfiguration:AccessTokenExpireHours");
 
             var key = Encoding.ASCII.GetBytes(secretKey);
 
@@ -29,7 +30,7 @@ namespace Application.Helpers
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.Email, user.Email)
             }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddDays(accessTokenExpireHours),
                 SigningCredentials =
                     new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

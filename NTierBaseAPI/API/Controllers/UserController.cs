@@ -42,7 +42,7 @@ namespace API.Controllers
         [HttpPost]
         [Route("authenticate")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> Login([FromBody]LoginModel model)
         {
             return Ok(ApiResult<LoginResponseModel>.Success(await _userService.Login(model)));
         }
@@ -68,7 +68,7 @@ namespace API.Controllers
         [Route("{id}/profile")]
         public async Task<IActionResult> Profile(string id)
         {
-            return Ok(ApiResult<ProfileResponseModel>.Success(await _userService.GetProfile(id)));
+            return Ok(ApiResult<ViewProfileModel>.Success(await _userService.GetProfile(id)));
         }
 
         [HttpPut]

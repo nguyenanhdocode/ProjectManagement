@@ -17,8 +17,7 @@ export default function Toast({ data }) {
     //#endregion
 
     return <>
-        <Alert severity={data['severity']}
-            sx={{mb: 1, minWidth: '350px'}}>
+        <Alert severity={data['severity']} sx={{mb: 1, minWidth: '350px', }}>
             {data['message']}
         </Alert>
     </>

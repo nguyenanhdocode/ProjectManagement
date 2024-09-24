@@ -14,6 +14,8 @@ namespace Application.MappingProfiles
         public TaskProfile()
         {
             CreateMap<CreateTaskModel, AppTask>();
+            CreateMap<CreateSubtaskModelBody, AppTask>();
+            CreateMap<AppTask, ViewTaskModel>();
         }
     }
 }

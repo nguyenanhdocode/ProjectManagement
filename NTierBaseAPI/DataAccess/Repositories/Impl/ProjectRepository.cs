@@ -22,6 +22,13 @@ namespace DataAccess.Repositories.Impl
             return projectAsset.Select(p => p.Asset).ToList();
         }
 
+        public async Task<List<AppUser>> GetProjectMembers(string projectId)
+        {
+            return await Dbcontext.ProjectMembers.Where(p => p.ProjectId.Equals(projectId))
+                .Select(p => p.Member)
+                .ToListAsync();
+        }
+
         public async Task<bool> IsUserJoinToProject(string projectId, string userId)
         {
             var projectMember = await Dbcontext.ProjectMembers

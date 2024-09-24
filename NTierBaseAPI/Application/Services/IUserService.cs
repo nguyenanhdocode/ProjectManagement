@@ -43,7 +43,7 @@ namespace Application.Services
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<ProfileResponseModel> GetProfile(string id);
+        Task<ViewProfileModel> GetProfile(string id);
 
         /// <summary>
         /// Check password is valid for change password funtional
