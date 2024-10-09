@@ -22,6 +22,7 @@ using System.Transactions;
 using System.Data;
 using IsolationLevel = System.Transactions.IsolationLevel;
 using Microsoft.Extensions.Options;
+using LinqKit;
 
 namespace Application.Services.Impl
 {
@@ -179,6 +180,18 @@ namespace Application.Services.Impl
                 Token = result,
                 UserId = user.Id.ToString()
             };
+        }
+
+        public async Task<List<ViewProfileModel>> FindUser(FindUserModel model)
+        {
+            if (string.IsNullOrEmpty(model.Kw))
+                return new List<ViewProfileModel>();
+
+            var predicate = PredicateBuilder.New<AppUser>(p => p.Email.Contains(model.Kw.ToLower()));
+
+            var users = await _userManager.Users.Where(predicate).ToListAsync();
+
+            return _mapper.Map<List<ViewProfileModel>>(users);
         }
 
         public async Task ForgotPassword(ForgotPasswordModel model)

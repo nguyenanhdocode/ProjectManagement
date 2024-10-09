@@ -22,7 +22,25 @@
         "id": "Id",
         "viewDetail": "View detail",
         "update": "Update",
-        "delete": "Delete"
+        "delete": "Delete",
+        "overview": "Overview",
+        "status": "Status",
+        "doubleClick": "double click",
+        "note": "Note",
+        "createdUser": "Created user",
+        "agree": "Agree",
+        "detail": "Detail",
+        "remain.hour": "hour",
+        "remain.hours": "hours",
+        "remain.day": "day",
+        "remain.days": "days",
+        "remain.month": "month",
+        "remain.months": "months",
+        "remain.minute": "minute",
+        "remain.minutes": "minutes",
+        "noResult": "No result founded",
+        "noData": "No data",
+        "progress": "Progress"
     },
     "user": {
         "signIn": "Sign in",
@@ -48,10 +66,18 @@
         "haveAccount": "Already have an account? Login",
         "loginFailed": "Login failed.",
         "signOut": "Sign out",
-        "name.maxLength": "Name length must be less than {0} characters"
+        "name.maxLength": "Name length must be less than {0} characters",
+        "findUser": "Find user"
     },
     "asset": {
-        "asset": "Asset"
+        "asset": "Asset",
+        "chooseAssets": "Choose assets",
+        "upload": "Upload",
+        "uploaded": "Uploaded",
+        "noAssets": "No asset yet",
+        "format": "Format",
+        "size": "Size",
+        "selected": "Selected"
     },
 
     "project": {
@@ -69,7 +95,18 @@
         "create": "Create new project",
         "update": "Update project",
         "overview": "Project overview",
-        "taskAffected.alert": "The update will affect the tasks inside the project, please review the change details before updating."
+        "taskAffected.alert": "The update will affect the tasks inside the project, please review the change details before updating.",
+        "addMember.success": "Member added successful",
+        "addAssets.success": "Assets added successful",
+        "removeAsset.confirm": "Remove assset",
+        "removeAsset.hint": "Do you want to remove this asset from project?",
+        "removeAsset.success": "Asset removed from project successful",
+        "delete.confirm": "Do you want to delete this project?",
+        "delete.hint": "Note, data cannot be restored after deletion, please check carefully!",
+        "delete.success": "Project deleted successful",
+        "removeMember.confirm": "Remove member from project",
+        "removeMember.hint": "Do you want to remove this member from project?",
+        "removeMember.success": "Member removed successful"
     },
 
     "task": {
@@ -86,6 +123,26 @@
         "updated.success": "Project update successful",
         "created.success": "Project create successful",
         "assignToUser.required": "Please select assigned user",
-        "endDate.mustBefore": "End date must be less than or equal to {0}"
+        "endDate.mustBefore": "End date must be less than or equal to {0}",
+        "detail": "Task detail",
+        "overview": "Overview",
+        "subtasks": "Sub-tasks",
+        "unfullfilled": "Unfullfilled",
+        "doing": "Doing",
+        "suspend": "Suspend",
+        "done": "Done",
+        "redo": "Redo",
+        "delete.confirm": "Do you want to delete this task?",
+        "delete.hint": "Note, data cannot be restored after deletion, please check carefully!",
+        "delete.success": "Task deleted successfully",
+        "beginDate.mustBefore": "Begin date must be before {0}",
+        "cannotStart": "Task can only start after {0}",
+        "prevTask.mustDone": "This job cannot be started because task \"{0}\" is not completed.",
+        "late": "Late tasks",
+        "shorten.title": "Shorten time",
+        "shorten.message": "The task was completed earlier than expected, would you like to update the timing of the related task?"
+    },
+    "dashboard": {
+        "todayTasks": "Today tasks"
     }
 }

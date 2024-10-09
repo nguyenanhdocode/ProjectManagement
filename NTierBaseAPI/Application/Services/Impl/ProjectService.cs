@@ -10,7 +10,10 @@ using AutoMapper;
 using Core.Entities;
 using DataAccess.Repositories;
 using DataAccess.UnifOfWork;
+using FluentValidation.Results;
 using LinqKit;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 using System.Transactions;
 
 namespace Application.Services.Impl
@@ -23,13 +26,16 @@ namespace Application.Services.Impl
         private IUnitOfWork _uow;
         private IAssetService _assetService;
         private ITaskService _taskService;
+        private readonly IServiceScopeFactory _scopeFactory;
+
 
         public ProjectService(IProjectRepository projectRepo
             , IMapper mapper
             , IClaimService claimService
             , IUnitOfWork unitOfWork
             , IAssetService assetService
-            , ITaskService taskService)
+            , ITaskService taskService
+            , IServiceScopeFactory serviceScope)
         {
             _projectRepository = projectRepo;
             _mapper = mapper;
@@ -37,6 +43,7 @@ namespace Application.Services.Impl
             _uow = unitOfWork;
             _assetService = assetService;
             _taskService = taskService;
+            _scopeFactory = serviceScope;
         }
 
         public async Task AddMember(AddProjectMemeberModel model)
@@ -49,15 +56,12 @@ namespace Application.Services.Impl
             if (!project.CreatedUserId.Equals(_claimService.GetUserId()))
                 throw new ForbiddenException();
 
-            project.ProjectMembers = new List<ProjectMember>
+            project.ProjectMembers = model.Body.UserIds.Select(p => new ProjectMember
             {
-                new ProjectMember
-                {
-                    ProjectId = model.ProjectId,
-                    MemberId = model.Body.UserId,
-                    JoinedDate = DateTime.UtcNow,
-                }
-            };
+                ProjectId = model.ProjectId,
+                MemberId = p,
+                JoinedDate = DateTime.UtcNow,
+            }).ToList();
 
             _uow.ProjectRepository.Update(project);
             await _uow.SaveChangesAsync();
@@ -65,41 +69,19 @@ namespace Application.Services.Impl
 
         public async Task AddProjectAsset(AddProjectAssetModel model)
         {
-            try
+            var ids = new List<string>();
+
+            foreach (string id in model.Body.AssetIds)
             {
-                using (var tran = new TransactionScope(TransactionScopeOption.Required
-                , new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted }
-                , TransactionScopeAsyncFlowOption.Enabled))
-                {
-                    var project = await _uow.ProjectRepository.GetByIdAsync(model.ProjectId);
-
-                    if (project == null)
-                        throw new BadRequestException("Project not found!");
-
-                    var uploadResult = await _assetService.Upload(new Models.Asset.CreateAssetModel
-                    {
-                        File = model.File,
-                    });
-
-                    project.ProjectAssets = new List<ProjectAsset>()
-                    {
-                        new ProjectAsset
-                        {
-                            ProjectId = model.ProjectId,
-                            AssetId = Guid.Parse(uploadResult.Id)
-                        }
-                    };
-
-                    _uow.ProjectRepository.Update(project);
-                    await _uow.SaveChangesAsync();
-
-                    tran.Complete();
-                }
+                if (!(await _uow.ProjectRepository.IsAssetAdded(model.ProjectId, id)))
+                    ids.Add(id);
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
+            if (ids.Count == 0)
+                return;
+
+            _uow.ProjectRepository.AddAssets(model.ProjectId, ids);
+            await _uow.SaveChangesAsync();
         }
 
         public async Task<CreateProjectResponseModel> Create(CreateProjectModel model)
@@ -121,7 +103,7 @@ namespace Application.Services.Impl
             return new CreateProjectResponseModel { Id = id };
         }
 
-        public async Task<GetAllProjectResponseModel> GetAll(GetAllProjectModel model)
+        public async Task<GetAllProjectResponseModel> GetAll(ViewAllProjectModel model)
         {
             string userId = _claimService.GetUserId();
             var predicate = PredicateBuilder.New<Project>(p => p.ManagerId.Equals(userId)
@@ -150,9 +132,9 @@ namespace Application.Services.Impl
                 && DateTime.Compare(p.EndDate, (DateTime)model.EndDate) <= 0);
             }
 
-            if (model.isManager != null)
+            if (!string.IsNullOrEmpty(model.JoinRole) && !model.JoinRole.Equals("all"))
             {
-                predicate = predicate.And(p => p.ManagerId.Equals(_claimService.GetUserId()) == model.isManager);
+                predicate = predicate.And(p => p.ManagerId.Equals(_claimService.GetUserId()) == (model.JoinRole.Equals("manager")));
             }
 
             var projects = await _uow.ProjectRepository.GetManyAsync(predicate);
@@ -367,6 +349,7 @@ namespace Application.Services.Impl
         {
             try
             {
+
                 using (var tran = new TransactionScope(TransactionScopeOption.Required
                     , new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted }
                     , TransactionScopeAsyncFlowOption.Enabled))
@@ -517,31 +500,69 @@ namespace Application.Services.Impl
             if (project == null)
                 throw new NotFoundException("Project not found");
 
-            int days = (int)Math.Round((project.EndDate - project.BeginDate).TotalDays + 1);
+            var timespan = project.EndDate - project.BeginDate;
+            int days = timespan.Days + 1;
             for (int i = 0; i < days; i++)
             {
                 timeline.Days.Add(project.BeginDate.AddDays(i));
                 timeline.Table[0].Add(null);
             }
 
-            var tasks = project.AppTasks.Where(p => (p.PreviousTaskId == null && p.NextTasks.Count == 0)
-            || (p.PreviousTaskId == null && p.NextTasks.Count > 0))
-                .ToList();
+            var predicate = PredicateBuilder.New<AppTask>(p => p.ParentId == null);
+
+            if (!string.IsNullOrEmpty(model.Kw))
+            {
+                model.Kw = model.Kw.ToLower();
+                predicate = predicate.And(p => p.Id.ToLower().Equals(model.Kw) || p.Name.ToLower().Contains(model.Kw));
+            }
+
+            if (!string.IsNullOrEmpty(model.Status))
+            {
+                var filterStatus = model.Status.Split(",").Select(p => Convert.ToInt32(p)).ToList();
+                predicate = predicate.And(p => filterStatus.Any(u => u.Equals(p.Status)));
+            }
+
+            if (!string.IsNullOrEmpty(model.AssignedToUserIds)) {
+                var filterUserIds = model.AssignedToUserIds.Split(",");
+                predicate = predicate.And(p => filterUserIds.Any(u => u.Equals(p.AssignedToUserId)));
+            }
+
+            if (model.IsLate != null && (bool)model.IsLate)
+            {
+                predicate = predicate.And(p => DateTime.Compare(p.EndDate, DateTime.UtcNow) < 0 
+                    && p.Status != (int)AppTaskStatus.Done);
+            }
+            
+            var tasks = project.AppTasks.Where(predicate).ToList();
 
             tasks = tasks.OrderByDescending(p => p.NextTasks.Count).ToList();
 
+            var fetchedTask = new List<string>();
+
+            int row = 0;
             foreach (var task in tasks)
             {
-                new BFS<AppTask>(delegate (ref AppTask top)
+                new BFS<AppTask>().TrevelTree(delegate (AppTask top)
                 {
-                    int row = 0, col = 0, colSpan = 1;
+                    if (fetchedTask.Any(p => p.Equals(top.Id)))
+                        return;
 
-                    col = (int)Math.Round((top.BeginDate - project.BeginDate).TotalDays);
-                    colSpan = (int)(top.EndDate - top.BeginDate).TotalDays;
+                    fetchedTask.Add(top.Id);
 
-                    //for (int i = 0; i < colSpan; i++)
-                    //{
-                        while (timeline.Table[row][col] != null)
+                    top.NextTasks = top.NextTasks.Where(predicate).ToList();
+
+                    int col = 0, colSpan = 1;
+
+                    col = (top.BeginDate - project.BeginDate).Days;
+                    colSpan = (top.EndDate - top.BeginDate).Days + 1;
+                    //colSpan = colSpan <= 0 ? 1 : colSpan;
+
+                    for (int i = 0; i < colSpan; i++)
+                    {
+                        var cell = timeline.Table[row][col + i];
+                        var currentRow = timeline.Table[row];
+
+                        while (cell != null)
                         {
                             row += 1;
 
@@ -551,26 +572,27 @@ namespace Application.Services.Impl
                                 newRow.Add(null);
 
                             timeline.Table.Add(newRow);
+
+                            cell = timeline.Table[row][col + i];
+                            currentRow = timeline.Table[row];
                         }
-                    //}
+                    }
 
 
-
-                    //for (int i = 0; i < colSpan; i++)
-                    //{
-                    //    timeline.Table[row][col + i] = new TimelineTask
-                    //    {
-                    //        Col = col,
-                    //        Row = row,
-                    //        TaskInfo = _mapper.Map<ViewTaskModel>(top),
-                    //        Colspan = colSpan,
-                    //        IsRendered = i == 0
-                    //    };
-                    //}
-                }, "NextTasks").TrevelTree(task);
+                    for (int i = 0; i < colSpan; i++)
+                    {
+                        timeline.Table[row][col + i] = new TimelineTask
+                        {
+                            Id = top.Id,
+                            Col = col,
+                            Row = row,
+                            TaskInfo = _mapper.Map<ViewTaskModel>(top),
+                            Colspan = colSpan,
+                            IsRendered = i == 0
+                        };
+                    }
+                }, task, "NextTasks");
             }
-
-            timeline.Table = timeline.Table.Where(p => p.Any(m => m != null)).ToList();
 
             return timeline;
         }
@@ -607,6 +629,94 @@ namespace Application.Services.Impl
 
             if (project.AppTasks.Any(p => DateTime.Compare(model.BeginDate, p.BeginDate) > 0))
                 throw new ConflictExeception("Some tasks affected");
+        }
+
+        public async Task CheckBeforeUpdateEndDate(Models.Project.CheckBeforeUpdateEndDateModel model)
+        {
+            var project = await _uow.ProjectRepository.GetByIdAsync(model.Id);
+
+            if (project == null)
+                throw new NotFoundException("Project not found");
+
+            if (project.AppTasks.Any(p => DateTime.Compare(p.EndDate, model.EndDate) > 0))
+                throw new ConflictExeception("Some tasks affected");
+        }
+
+        public async Task<List<ViewTaskModel>> GetTasksOfProject(ViewProjectTasksModel model)
+        {
+            var project = await _uow.ProjectRepository.GetByIdAsync(model.Id);
+
+            if (project == null)
+                throw new NotFoundException("Project not found");
+
+            var tasks = project.AppTasks.ToList();
+
+            return _mapper.Map<List<ViewTaskModel>>(tasks);
+        }
+
+        public async Task RemoveMembers(DeleteProjectMembersModel model)
+        {
+            var project = await _uow.ProjectRepository.GetByIdAsync(model.ProjectId);
+
+            if (project == null)
+                throw new NotFoundException("Project not found");
+
+            await _uow.ProjectRepository.RemoveMember(model.ProjectId, model.MemberId);
+
+            await _uow.SaveChangesAsync();
+        }
+
+        public async Task Delete(DeleteProjectModel model)
+        {
+            var project = await _uow.ProjectRepository.GetByIdAsync(model.Id);
+
+            if (project == null)
+                throw new NotFoundException("Project not found");
+
+            if (!project.ManagerId.Equals(_claimService.GetUserId()))
+                throw new ForbiddenException();
+
+            project.ProjectAssets.Clear();
+            project.ProjectMembers.Clear();
+
+            _uow.TaskRepository.DeleteRange(project.AppTasks.ToList());
+
+            _uow.ProjectRepository.Update(project);
+            _uow.ProjectRepository.Delete(project);
+
+            await _uow.SaveChangesAsync();
+        }
+
+        public async Task<List<ViewTaskModel>> GetAvaiablePrevTasks(ViewAvaiablePrevTasksModel model)
+        {
+            var project = await _uow.ProjectRepository.GetByIdAsync(model.ProjectId);
+
+            if (project == null)
+                throw new NotFoundException("Project not found");
+
+            var predicate = PredicateBuilder.New<AppTask>(p => p.ParentId == null);
+
+            if (!string.IsNullOrEmpty(model.TaskId))
+            {
+                predicate = predicate.And(p => p.Id != model.TaskId && p.PreviousTaskId != model.TaskId);
+            }
+
+            var tasks = project.AppTasks.Where(predicate).ToList();
+
+            return _mapper.Map<List<ViewTaskModel>>(tasks);
+        }
+
+        public async Task<double> GetProjectProgress(ViewProjectProgressModel model)
+        {
+            var project = await _uow.ProjectRepository.GetByIdAsync(model.Id);
+
+            if (project == null)
+                throw new NotFoundException("Project not found");
+
+            var totalTasks = project.AppTasks.Where(p => p.SubTasks.Count == 0);
+            var doneTasks = totalTasks.Where(p => p.Status == (int)AppTaskStatus.Done);
+
+            return totalTasks.Count() > 0 ? (doneTasks.Count() / (double)totalTasks.Count()) * 100 : 0;
         }
     }
 }

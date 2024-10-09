@@ -120,5 +120,13 @@ namespace API.Controllers
             return Ok(ApiResult<RefreshTokenLoginResponseModel>
                 .Success(await _userService.LoginWithRefreshToken(model)));
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> FindUser(FindUserModel model)
+        {
+            return Ok(ApiResult<List<ViewProfileModel>>
+                .Success(await _userService.FindUser(model)));
+        }
     }
 }

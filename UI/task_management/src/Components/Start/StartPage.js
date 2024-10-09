@@ -190,7 +190,7 @@ export default function StartPage() {
                                     { minHeight: 48, px: 2.5 },
                                     open ? { justifyContent: 'initial' }
                                         : { justifyContent: 'center' }
-                                ]}>
+                                ]} onClick={_ => nav('/')}>
                                 <ListItemIcon
                                     sx={[
                                         { minWidth: 0, justifyContent: 'center' },

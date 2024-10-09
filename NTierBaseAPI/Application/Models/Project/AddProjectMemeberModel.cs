@@ -18,6 +18,6 @@ namespace Application.Models.Project
 
     public class AddProjectMemeberModelBody
     {
-        public string UserId { get; set; }
+        public List<string> UserIds { get; set; }
     }
 }

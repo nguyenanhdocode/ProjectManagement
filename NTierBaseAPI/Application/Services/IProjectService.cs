@@ -97,7 +97,7 @@ namespace Application.Services
         /// </summary>
         /// <param name="param"></param>
         /// <returns></returns>
-        Task<GetAllProjectResponseModel> GetAll(GetAllProjectModel model);
+        Task<GetAllProjectResponseModel> GetAll(ViewAllProjectModel model);
 
         /// <summary>
         /// Get project detail
@@ -132,5 +132,46 @@ namespace Application.Services
         /// <param name="model"></param>
         /// <returns></returns>
         Task CheckBeforeUpdateBeginDate(CheckBeforeUpdateBeginDateModel model);
+
+        /// <summary>
+        /// Check valid before update enddate
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task CheckBeforeUpdateEndDate(Models.Project.CheckBeforeUpdateEndDateModel model);
+
+        /// <summary>
+        /// Get tasks of project
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<List<ViewTaskModel>> GetTasksOfProject(ViewProjectTasksModel model);
+
+        /// <summary>
+        /// Delete project members
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task RemoveMembers(DeleteProjectMembersModel model);
+
+        /// <summary>
+        /// Delete project
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task Delete(DeleteProjectModel model);
+
+        /// <summary>
+        /// Get avaiable previous task
+        /// </summary>
+        /// <returns></returns>
+        Task<List<ViewTaskModel>> GetAvaiablePrevTasks(ViewAvaiablePrevTasksModel model);
+
+        /// <summary>
+        /// View project progress
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<double> GetProjectProgress(ViewProjectProgressModel model);
     }
 }

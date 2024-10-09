@@ -9,27 +9,10 @@ namespace Application.Common
 {
     public class BFS<T> where T : class
     {
-        public delegate void NodeAction(ref T node);
+        public delegate void NodeAction(T node);
+        public delegate Task NodeActionAsync(T node);
 
-        public NodeAction Action { get; set; }
-        public string NodeChidrenFieldName { get; set; }
-
-        public BFS(NodeAction nodeAction, string nodeChidrenFieldName)
-        {
-            if (nodeAction == null)
-                throw new ArgumentNullException(nameof(nodeAction));
-
-            if (nodeChidrenFieldName == null)
-                throw new ArgumentNullException(nameof(nodeChidrenFieldName));
-
-            if (typeof(T).GetProperty(nodeChidrenFieldName) == null)
-                throw new ArgumentException($"{typeof(T).FullName} is not contain {nameof(nodeChidrenFieldName)}");
-
-            Action = nodeAction;
-            NodeChidrenFieldName = nodeChidrenFieldName;
-        }
-
-        public void TrevelTree(T root)
+        public void TrevelTree(NodeAction action, T root, string nodeChidrenFieldName)
         {
             Queue<T> queue = new Queue<T>();
             List<T> visited = new List<T>();
@@ -41,14 +24,44 @@ namespace Application.Common
             {
                 var top = queue.Dequeue();
 
-                Action(ref top);
+                action(top);
 
-                var children = (IEnumerable<T>)(typeof(T).GetProperty(NodeChidrenFieldName)?.GetValue(top));
+                var children = (IEnumerable<T>)(typeof(T).GetProperty(nodeChidrenFieldName)?.GetValue(top));
 
                 if (children == null)
                     continue;
 
                 foreach ( var child in children )
+                {
+                    if (!visited.Contains(child))
+                    {
+                        queue.Enqueue(child);
+                        visited.Add(child);
+                    }
+                }
+            }
+        }
+
+        public async void TrevelTreeAsync(NodeActionAsync action, T root, string nodeChidrenFieldName)
+        {
+            Queue<T> queue = new Queue<T>();
+            List<T> visited = new List<T>();
+
+            queue.Enqueue(root);
+            visited.Add(root);
+
+            while (queue.Count > 0)
+            {
+                var top = queue.Dequeue();
+
+                await action.Invoke(top);
+
+                var children = (IEnumerable<T>)(typeof(T).GetProperty(nodeChidrenFieldName)?.GetValue(top));
+
+                if (children == null)
+                    continue;
+
+                foreach (var child in children)
                 {
                     if (!visited.Contains(child))
                     {

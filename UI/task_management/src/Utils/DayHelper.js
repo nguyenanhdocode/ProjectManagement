@@ -25,3 +25,25 @@ export function convertUTCDateToLocalDate(date) {
 
     return newDate;
 }
+
+export function convertHoursToRemain(totalHours) {
+    const hoursInADay = 24;
+    const hoursInAMonth = 30 * hoursInADay; // Giả sử 1 tháng có 30 ngày
+    const minutesInAnHour = 60;
+
+    const months = Math.floor(totalHours / hoursInAMonth);
+    totalHours %= hoursInAMonth;
+
+    const days = Math.floor(totalHours / hoursInADay);
+    totalHours %= hoursInADay;
+
+    const hours = Math.floor(totalHours);
+    const minutes = Math.floor((totalHours - hours) * minutesInAnHour);
+
+    return {
+        months,
+        days,
+        hours,
+        minutes
+    };
+}

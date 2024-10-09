@@ -103,7 +103,7 @@ export default function UpdateProjectBeginDateForm({
                 </Alert>}
                 <CustomDateTimePicker control={control} name='beginDate'
                     error={Boolean(errors?.beginDate)} label={t('common.beginDate')}
-                    helperText={errors?.beginDate?.message} variant='standard'
+                    helperText={errors?.beginDate?.message} variant='filled'
                     required={true} labelShink={true} customOnClose={onBeginDateChange}>
 
                 </CustomDateTimePicker>

@@ -16,6 +16,7 @@ namespace Core.Entities
         public string? CreatedUserId { get; set; }
         public string FileName { get; set; }
         public double Size { get; set; }
+        public string DisplayFileName { get; set; }
         public virtual AppUser CreatedUser { get; set; }
         public virtual AppUser AvatarUser { get; set; }
         public virtual ICollection<ProjectAsset> ProjectAssets { get; set; }

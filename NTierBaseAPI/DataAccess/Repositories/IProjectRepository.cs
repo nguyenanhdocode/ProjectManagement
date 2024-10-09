@@ -45,5 +45,29 @@ namespace DataAccess.Repositories
         /// <param name="projectId"></param>
         /// <returns></returns>
         Task<List<AppUser>> GetProjectMembers(string projectId);
+
+        /// <summary>
+        /// Remove members
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="memberId"></param>
+        /// <returns></returns>
+        Task RemoveMember(string projectId, string memberId);
+
+        /// <summary>
+        /// Add assets
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="assetIds"></param>
+        /// <returns></returns>
+        void AddAssets(string projectId, List<string> assetIds);
+
+        /// <summary>
+        /// Check if an asset added to project
+        /// </summary>
+        /// <param name="projectId"></param>
+        /// <param name="assetId"></param>
+        /// <returns></returns>
+        Task<bool> IsAssetAdded(string projectId, string assetId);
     }
 }

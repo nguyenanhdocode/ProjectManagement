@@ -9,6 +9,7 @@ namespace Application.Models.Project
 {
     public class ViewProjectOverviewModel : ViewProjectModel
     {
+        public int RemainHours { get; set; }
         public ViewProfileModel Manager { get; set; }
     }
 }

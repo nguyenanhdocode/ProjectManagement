@@ -1,8 +1,10 @@
 ﻿using Application.Models;
 using Application.Models.Asset;
 using Application.Models.Project;
+using Application.Models.Task;
 using Application.Models.User;
 using Application.Services;
+using Application.Services.Impl;
 using Application.Validators.Project;
 using Core.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -31,9 +33,9 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route("{projectId}/assets")]
+        [Route("{id}/assets")]
         [Authorize]
-        public async Task<IActionResult> AddProjectAsset([FromForm]AddProjectAssetModel model)
+        public async Task<IActionResult> AddProjectAsset(AddProjectAssetModel model)
         {
             await _projectService.AddProjectAsset(model);
             return Ok(ApiResult<object?>.Success(null));
@@ -120,7 +122,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll(GetAllProjectModel model)
+        public async Task<IActionResult> GetAll(ViewAllProjectModel model)
         {
             return Ok(ApiResult<GetAllProjectResponseModel>
                 .Success(await _projectService.GetAll(model)));
@@ -169,6 +171,58 @@ namespace API.Controllers
         {
             await _projectService.CheckBeforeUpdateBeginDate(model);
             return Ok(ApiResult<object?>.Success(null));
+        }
+
+        [HttpHead]
+        [Route("{id}/is-valid-before-update-enddate")]
+        [Authorize]
+        public async Task<IActionResult> CheckBeforeUpdateEndDate(Application.Models.Project.CheckBeforeUpdateEndDateModel model)
+        {
+            await _projectService.CheckBeforeUpdateEndDate(model);
+            return Ok(ApiResult<object?>.Success(null));
+        }
+
+        [HttpGet]
+        [Route("{id}/tasks")]
+        [Authorize]
+        public async Task<IActionResult> GetTasksOfProject(ViewProjectTasksModel model)
+        {
+            return Ok(ApiResult<List<ViewTaskModel>>
+                .Success(await _projectService.GetTasksOfProject(model)));
+        }
+
+        [HttpDelete]
+        [Route("{projectId}/members/{memberId}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveMember(DeleteProjectMembersModel model)
+        {
+            await _projectService.RemoveMembers(model);
+            return Ok(ApiResult<object?>.Success(null));
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        [Authorize]
+        public async Task<IActionResult> Delete(DeleteProjectModel model)
+        {
+            await _projectService.Delete(model);
+            return Ok(ApiResult<object?>.Success(null));
+        }
+
+        [HttpGet]
+        [Route("{id}/avaiable-prev-tasks")]
+        [Authorize]
+        public async Task<IActionResult> GetAvaiablePrevTask(ViewAvaiablePrevTasksModel model)
+        {
+            return Ok(ApiResult<List<ViewTaskModel>>.Success(await _projectService.GetAvaiablePrevTasks(model)));
+        }
+
+        [HttpGet]
+        [Route("{id}/progress")]
+        [Authorize]
+        public async Task<IActionResult> GetProgress(ViewProjectProgressModel model)
+        {
+            return Ok(ApiResult<double>.Success(await _projectService.GetProjectProgress(model)));
         }
     }
 }

@@ -3,11 +3,6 @@ using Application.Models.Asset;
 using AutoMapper;
 using Core.Entities;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.MappingProfiles
 {
@@ -16,7 +11,7 @@ namespace Application.MappingProfiles
         public AssetProfile()
         {
             CreateMap<Asset, ViewAssetModel>()
-                .ForMember(p => p.RelativeUrl, m => m.MapFrom<AssetToViewAssetModelResolver>());
+                .ForMember(p => p.Url, m => m.MapFrom<AbsolutePathResolver>());
             CreateMap<Asset, CreateAssetResponseModel>();
         }
     }
@@ -35,6 +30,26 @@ namespace Application.MappingProfiles
                 return string.Empty;
 
             return string.Format("{0}/{1}", _staticConfiguration.StaticUrl, source.FileName);
+        }
+    }
+
+    public class AbsolutePathResolver : IValueResolver<Asset, ViewAssetModel, string>
+    {
+        private StaticConfiguration _staticConfiguration;
+        private AppConfiguration _appConfiguration;
+
+        public AbsolutePathResolver(IOptions<StaticConfiguration> staticConfiguration
+            , IOptions<AppConfiguration> appConfiguration)
+        {
+            _staticConfiguration = staticConfiguration.Value;
+            _appConfiguration = appConfiguration.Value;
+        }
+
+        public string Resolve(Asset source, ViewAssetModel destination, string destMember, ResolutionContext context)
+        {
+
+            return string.Format("{0}{1}/{2}", _appConfiguration.Domain
+                , _staticConfiguration.StaticUrl, source.FileName);
         }
     }
 }

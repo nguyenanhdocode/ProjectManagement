@@ -15,7 +15,10 @@ namespace Application.MappingProfiles
         {
             CreateMap<CreateTaskModel, AppTask>();
             CreateMap<CreateSubtaskModelBody, AppTask>();
-            CreateMap<AppTask, ViewTaskModel>();
+            CreateMap<AppTask, ViewTaskOverviewResponseModel>()
+                .ForMember(p => p.RemainHours, m => m.MapFrom(u => (u.EndDate - DateTime.UtcNow).TotalHours));
+            CreateMap<AppTask, ViewTaskModel>()
+                .Include<AppTask, ViewTaskOverviewResponseModel>();
         }
     }
 }

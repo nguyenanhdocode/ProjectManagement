@@ -23,7 +23,25 @@
         "id": "Mã",
         "viewDetail": "Xem chi tiết",
         "update": "Cập nhật",
-        "delete": "Xóa"
+        "delete": "Xóa",
+        "overview": "Tổng quan",
+        "status": "Trạng thái",
+        "doubleClick": "nháy đúp",
+        "note": "Ghi chú",
+        "createdUser": "Người tạo",
+        "agree": "Đồng ý",
+        "detail": "Chi tiết",
+        "remain.hour": "giờ",
+        "remain.hours": "giờ",
+        "remain.day": "ngày",
+        "remain.days": "ngày",
+        "remain.month": "tháng",
+        "remain.months": "tháng",
+        "remain.minute": "phút",
+        "remain.minutes": "phút",
+        "noResult": "Không tìm thấy kết quả nào",
+        "noData": "Không có dữ liệu",
+        "progress": "Tiến độ"
     },
     "user": {
         "signIn": "Đăng nhập",
@@ -48,11 +66,19 @@
         "continueGoogle": "Tiếp tục với Google",
         "haveAccount": "Bạn đã có tài khoản? Đăng nhập",
         "loginFailed": "Thông tin đăng nhập không chính xác.",
-        "signOut": "Đăng xuất"
+        "signOut": "Đăng xuất",
+        "findUser": "Tìm kiếm người dùng"
     },
 
     "asset": {
-        "asset": "Tài nguyên"
+        "asset": "Tài nguyên",
+        "chooseAssets": "Chọn tài nguyên",
+        "upload": "Tải lên",
+        "uploaded": "Đã tải lên",
+        "noAssets": "Chưa có tài nguyên nào",
+        "format": "Định dạng",
+        "size": "Kích thước",
+        "selected": "Đã chọn"
     },
 
     "project": {
@@ -70,7 +96,18 @@
         "create": "Tạo mới dự án",
         "update": "Cập nhật dự án",
         "overview": "Tổng quan dự án",
-        "taskAffected.alert": "Việc cập nhật sẽ ảnh hưởng đến các công việc bên trong dự án, vui lòng xem chi tiết sự thay đổi trước khi cập nhật."
+        "taskAffected.alert": "Việc cập nhật sẽ ảnh hưởng đến các công việc bên trong dự án, vui lòng xem chi tiết sự thay đổi trước khi cập nhật.",
+        "addMember.success": "Thêm thành viên thành công",
+        "addAssets.success": "Thêm tài nguyên thành công",
+        "removeAsset.confirm": "Gõ bỏ tài nguyên",
+        "removeAsset.hint": "Bạn có muốn gỡ bỏ tài nguyên này khỏi dự án không?",
+        "removeAsset.success": "Gõ bỏ tài nguyên thành công",
+        "delete.confirm": "Bạn có muốn xóa dự án này không?",
+        "delete.hint": "Lưu ý, dữ liệu không thể khôi phục sau khi xóa, vui lòng kiểm tra kỹ!",
+        "delete.success": "Xóa dự án thành công",
+        "removeMember.confirm": "Xóa thành viên khỏi dự án",
+        "removeMember.hint": "Bạn có muốn xóa thành viên này khỏi dự án không?",
+        "removeMember.success": "Xóa thành viên thành công"
     },
 
     "workspace": {
@@ -91,6 +128,26 @@
         "updated.success": "Cập nhật công việc thành công",
         "created.success": "Tạo công việc thành công",
         "assignToUser.required": "Vui lòng chọn người phụ trách",
-        "endDate.mustBefore": "Ngày kết thúc phải nhỏ hơn hoặc bằng ngày {0}"
+        "endDate.mustBefore": "Ngày kết thúc phải nhỏ hơn hoặc bằng ngày {0}",
+        "detail": "Chi tiết công việc",
+        "overview": "Tổng quan công việc",
+        "subtasks": "Công việc con",
+        "unfullfilled": "Chưa thực hiện",
+        "doing": "Đang thực hiện",
+        "suspend": "Tạm ngưng",
+        "done": "Hoàn thành",
+        "redo": "Thực hiện lại",
+        "delete.confirm": "Bạn có muốn xóa công việc này không?",
+        "delete.hint": "Lưu ý, dữ liệu không thể khôi phục sau khi xóa, vui lòng kiểm tra kỹ!",
+        "delete.success": "Xóa công việc thành công",
+        "beginDate.mustBefore": "Ngày bắt đầu phải trước ngày {0}",
+        "cannotStart": "Công việc chỉ có thể bắt đầu từ sau ngày {0}",
+        "prevTask.mustDone": "Không thể bắt đầu công việc này vì công việc \"{0}\" chưa hoàn thành.",
+        "late": "Trễ hạn",
+        "shorten.title": "Rút ngắn thời gian",
+        "shorten.message": "Công việc được hoàn thành sớm hơn dự kiến, bạn có muốn cập nhật lại thời gian của các công việc có liên quan không?"
+    },
+    "dashboard": {
+        "todayTasks": "Công việc hôm nay"
     }
 }

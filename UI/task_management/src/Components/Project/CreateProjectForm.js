@@ -94,25 +94,28 @@ export default function CreateProjectForm({
 
             <DialogContent>
 
-                <TextField {...register('name')} variant='standard' label={t('common.name')}
-                    fullWidth error={Boolean(errors?.name)} helperText={errors?.name?.message}>
+                <TextField {...register('name')} variant='filled' label={t('common.name')}
+                    fullWidth error={Boolean(errors?.name)} helperText={errors?.name?.message}
+                    InputLabelProps={{ shrink: true }}>
                 </TextField>
 
                 <CustomDateTimePicker control={control} name='beginDate'
                     error={Boolean(errors?.beginDate)} label={t('common.beginDate')}
-                    helperText={errors?.beginDate?.message} variant='standard'
-                    required={true}>
+                    helperText={errors?.beginDate?.message} variant='filled'
+                    required={true} labelShink={true}>
 
                 </CustomDateTimePicker>
 
                 <CustomDateTimePicker control={control} name='endDate'
                     error={Boolean(errors?.endDate)} label={t('common.endDate')}
-                    helperText={errors?.endDate?.message} variant='standard'>
+                    helperText={errors?.endDate?.message} variant='filled'
+                    labelShink={true}>
 
                 </CustomDateTimePicker>
 
                 <TextField multiline margin="dense" label={t('common.description')}
-                    fullWidth variant="standard" {...register('description')}/>
+                    fullWidth variant="filled" {...register('description')}
+                    InputLabelProps={{ shrink: true }}/>
 
                 <input type='hidden' {...register('managerId')} />
             </DialogContent>

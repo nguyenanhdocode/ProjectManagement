@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Common;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,8 @@ namespace Application.Models.Task
         public string Name { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
-        public string Note { get; set; }
+        public string? Note { get; set; }
         public string AssignedToUserId { get; set; }
+        public int Status { get; set; }
     }
 }

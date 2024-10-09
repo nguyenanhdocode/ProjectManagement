@@ -12,6 +12,17 @@ namespace DataAccess.Repositories.Impl
 {
     public class ProjectRepository : BaseRepository<Project>, IProjectRepository
     {
+        public void AddAssets(string projectId, List<string> assetIds)
+        {
+            foreach (var assetId in assetIds)
+            {
+                Dbcontext.ProjectAssets.Add(new ProjectAsset
+                {
+                    ProjectId = projectId,
+                    AssetId = Guid.Parse(assetId)
+                });
+            }
+        }
 
         public async Task<List<Asset>> GetAssetsOfProject(string projectId)
         {
@@ -27,6 +38,14 @@ namespace DataAccess.Repositories.Impl
             return await Dbcontext.ProjectMembers.Where(p => p.ProjectId.Equals(projectId))
                 .Select(p => p.Member)
                 .ToListAsync();
+        }
+
+        public async Task<bool> IsAssetAdded(string projectId, string assetId)
+        {
+            var row = (await Dbcontext.ProjectAssets
+                .SingleOrDefaultAsync(p => p.ProjectId.Equals(projectId) && p.AssetId.Equals(Guid.Parse(assetId))));
+
+            return row != null;
         }
 
         public async Task<bool> IsUserJoinToProject(string projectId, string userId)
@@ -59,6 +78,14 @@ namespace DataAccess.Repositories.Impl
             {
                 Dbcontext.ProjectAssets.RemoveRange(projectAssets);
             }
+        }
+
+        public async Task RemoveMember(string projectId, string memberId)
+        {
+            var row = await Dbcontext.ProjectMembers
+                .SingleOrDefaultAsync(p => p.ProjectId.Equals(projectId) && p.MemberId.Equals(memberId));
+
+            Dbcontext.RemoveRange(row);
         }
     }
 }

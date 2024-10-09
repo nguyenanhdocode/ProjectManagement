@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Badge, Card, CardActions, CardContent, Chip, Divider, FormControl, IconButton, InputLabel, ListItemIcon, Menu, MenuItem, Select, Stack, Switch, TextField, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Badge, Card, CardActions, CardContent, Chip, Divider, FormControl, IconButton, InputLabel, ListItemIcon, Menu, MenuItem, Popover, Select, Skeleton, Stack, Switch, TextField, Typography } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react"
 import AccordionActions from '@mui/material/AccordionActions';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -10,15 +10,17 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimePicker } from "@mui/x-date-pickers";
+import { DateTimePicker, MobileDateTimePicker } from "@mui/x-date-pickers";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { APIContext } from "../../Common/Contexts";
+import { APIContext, NotificationContext } from "../../Common/Contexts";
 import API, { endpoints } from "../../Config/API";
-import { convertUTCDateToLocalDate, formatDateTime } from "../../Utils/DayHelper";
+import { convertToUTC, convertUTCDateToLocalDate, formatDateTime } from "../../Utils/DayHelper";
 import { ProjectForm } from "./UpdateProjectForm";
 import CreateProjectForm from "./CreateProjectForm";
+import dayjs from "dayjs";
+import ConfirmDialog from "../Common/ConfirmDialog";
 
 const Item = styled(Card)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -36,48 +38,30 @@ export default function ProjectIndex() {
     //#region States
     let [projects, setProjects] = useState([]);
     const [t] = useTranslation();
-    const [filterMenu, setFilterMenu] = useState(false);
-    const [filterApplied, setFilterApplied] = useState(false);
-    const joinRoleRef = useRef();
-    const beginDateRef = useRef();
-    const endDateRef = useRef();
     const kwRef = useRef();
-    const [kw, setKw] = useState();
     const [param, setParam] = useSearchParams();
     const { request, bearerRequest } = useContext(APIContext);
     const nav = useNavigate();
     const [showProjectForm, setShowProjectForm] = useState(false);
+    const [filterAnchorEL, setFilterAnchorEL] = useState(null);
+    const [deleteProjectId, setDeleteProjectId] = useState(null);
+    const { notificationManager } = useContext(NotificationContext);
     //#endregion
 
     //#region Methods
     function onFilterClick(e) {
-        setFilterMenu(!filterMenu);
+        setFilterAnchorEL(e.currentTarget);
     }
 
     function onFilterCloseClick() {
-        setFilterMenu(false);
+        setFilterAnchorEL(null);
     };
-
-    function onFilterApplyClick() {
-        setParam({
-            kw: kwRef.current.value,
-            isManager: joinRoleRef.current.value == 'all' ? '' : joinRoleRef.current.value == 'manager',
-            beginDate: beginDateRef.current.value,
-            endDate: endDateRef.current.value
-        });
-
-        setFilterApplied(true);
-        setFilterMenu(false);
-    }
 
     function onKwKeyDown(e) {
         if (e.repeat) { return; }
         if (e.key == 'Enter') {
-            setParam({
-                kw: kwRef.current.value,
-                isManager: joinRoleRef.current.value == 'all' ? '' : joinRoleRef.current.value == 'manager',
-                beginDate: beginDateRef.current.value,
-                endDate: endDateRef.current.value
+            setParam(current => {
+                return { ...current, kw: kwRef.current?.value };
             });
         }
     }
@@ -94,11 +78,7 @@ export default function ProjectIndex() {
     function clearFilter() {
         setParam({
             kw: kwRef.current.value,
-            isManager: '',
-            beginDate: '',
-            endDate: ''
         });
-        setFilterApplied(false);
     }
 
     async function getAllProjects() {
@@ -117,6 +97,41 @@ export default function ProjectIndex() {
         }
     }
 
+    function onBeginDateChange(value) {
+        if (!value) return;
+        setParam(current => {
+            return { ...current, beginDate: new Date(value).toISOString() };
+        });
+    }
+
+    function onEndDateChange(value) {
+        setParam(current => {
+            return { ...current, endDate: new Date(value).toISOString() };
+        });
+    }
+
+    function isFilterApplied() {
+        if (param.has('kw'))
+            return param.size > 1;
+        return param.size > 0;
+    }
+
+    function onJoinRoleChange(e) {
+        setParam(current => {
+            return { ...current, joinRole: e.target.value };
+        });
+    }
+
+    async function deleteProject() {
+        try {
+            const res = await bearerRequest.delete(endpoints['deleteProject'].replace('{0}', deleteProjectId));
+            notificationManager.showSuccess(t('project.delete.success'));
+            getAllProjects();
+            setDeleteProjectId(null);
+        } catch (error) {
+            
+        }
+    }
     //#endregion
 
     //#region Hooks
@@ -139,47 +154,51 @@ export default function ProjectIndex() {
                 <IconButton size="large" aria-controls="menu-appbar" aria-haspopup="true" onClick={onFilterClick} color="inherit">
                     <FilterAltIcon></FilterAltIcon>
                 </IconButton>
-                {filterApplied && <Chip label={t('common.filterApplied')} onDelete={clearFilter} />}
-                <Card
-                    sx={{
-                        visibility: filterMenu ? 'visible' : 'hidden'
-                        , position: 'absolute', p: 2, minWidth: 200
-                        , zIndex: 999
-                    }}>
-                    <CardContent sx={{ p: 1 }}>
-                        <Typography variant="subtitle1">{t('common.filter')}</Typography>
-                        <Stack sx={{ mt: 2 }}>
-                            <FormControl fullWidth>
-                                <InputLabel size="small" id="demo-simple-select-label">
-                                    {t('project.joinRole')}
-                                </InputLabel>
-                                <Select label={t('common.filter')} size="small" defaultValue={'all'}
-                                    inputRef={joinRoleRef}>
-                                    <MenuItem value={'all'}>{t('common.all')}</MenuItem>
-                                    <MenuItem value={'manager'}>{t('project.manager')}</MenuItem>
-                                    <MenuItem value={'member'}>{t('project.member')}</MenuItem>
-                                </Select>
-                            </FormControl>
+                {isFilterApplied() && <Chip label={t('common.filterApplied')} onDelete={clearFilter} />}
+                <Popover anchorEl={filterAnchorEL}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                    }}
+                    keepMounted
+                    open={Boolean(filterAnchorEL)}
+                    onClose={onFilterCloseClick}>
+                    <Card sx={{ p: 2, minWidth: 400 }}>
+                        <CardContent sx={{ p: 1 }}>
+                            <Typography variant="subtitle1">{t('common.filter')}</Typography>
+                            <Stack sx={{ mt: 2 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel size="small" id="demo-simple-select-label">
+                                        {t('project.joinRole')}
+                                    </InputLabel>
+                                    <Select label={t('project.joinRole')} size="small" variant="filled"
+                                        onChange={onJoinRoleChange} value={param.has('joinRole') ? param.get('joinRole') : 'all'}>
+                                        <MenuItem value={'all'}>{t('common.all')}</MenuItem>
+                                        <MenuItem value={'manager'}>{t('project.manager')}</MenuItem>
+                                        <MenuItem value={'member'}>{t('project.member')}</MenuItem>
+                                    </Select>
+                                </FormControl>
 
-                            <Typography sx={{ mt: 2 }} variant="subtitle2">{t('common.time')}</Typography>
-                            <DateTimePicker sx={{ mt: 1 }} label={t('common.beginDate')}
-                                slotProps={{ textField: { size: 'small' } }}
-                                inputRef={beginDateRef}></DateTimePicker>
-                            <DateTimePicker sx={{ mt: 1 }} label={t('common.endDate')}
-                                slotProps={{ textField: { size: 'small' } }}
-                                inputRef={endDateRef}></DateTimePicker>
+                                <Typography sx={{ mt: 2 }} variant="subtitle2">{t('common.time')}</Typography>
+                                <DateTimePicker sx={{ mt: 1 }} label={t('common.beginDate')}
+                                    slotProps={{ textField: { size: 'small', variant: 'filled', }, field: { clearable: true } }}
+                                    onChange={onBeginDateChange} value={param.has('beginDate') ? dayjs(param['beginDate']) : null}></DateTimePicker>
 
-                        </Stack>
-                    </CardContent>
-                    <CardActions sx={{ p: 1, display: "flex", justifyContent: 'space-between' }}>
-                        <Button variant="outlined" onClick={onFilterApplyClick}>{t('common.apply')}</Button>
-                        <Button variant="outlined" onClick={onFilterCloseClick}>{t('common.close')}</Button>
-                        <Button variant="outlined" onClick={onFilterCloseClick}>{t('common.reset')}</Button>
-                    </CardActions>
-                </Card>
+                                <DateTimePicker sx={{ mt: 1 }} label={t('common.endDate')}
+                                    slotProps={{ textField: { size: 'small', variant: 'filled' } }}
+                                    onChange={onEndDateChange} value={param.has('endDate') ? dayjs(param['endDate']) : null}></DateTimePicker>
+
+                            </Stack>
+                        </CardContent>
+                        <CardActions sx={{ p: 1, display: "flex", justifyContent: 'space-between' }}>
+                            <Button variant="outlined" onClick={onFilterCloseClick}>{t('common.close')}</Button>
+                            <Button variant="outlined" onClick={clearFilter}>{t('common.reset')}</Button>
+                        </CardActions>
+                    </Card>
+                </Popover>
             </div>
         </Box>
-        <Grid container spacing={2} sx={{ mt: 0 }}>
+        {projects.length > 0 ? <Grid container spacing={2} sx={{ mt: 0 }}>
             {projects && projects.map(p => <Grid item xs={12} sm={6} md={4} lg={3}>
                 <Item >
                     <CardContent sx={{ p: 0, height: 150 }}>
@@ -198,20 +217,25 @@ export default function ProjectIndex() {
                                 {t('common.from')} <Chip size="small"
                                     label={formatDateTime(convertUTCDateToLocalDate(new Date(p['beginDate'])))}></Chip>
                             </Typography>
-                            <Typography sx={{mt: 1}} variant="body2">
+                            <Typography sx={{ mt: 1 }} variant="body2">
                                 {t('common.to')} <Chip size="small"
                                     label={formatDateTime(convertUTCDateToLocalDate(new Date(p['endDate'])))}></Chip>
                             </Typography>
                         </Box>
                     </CardContent>
                     <CardActions sx={{ p: 0, pt: 1 }}>
-                        <Button size="small" onClick={() => nav(`/projects/${p['id']}`)}>Chi tiết</Button>
+                        <Button size="small" onClick={() => nav(`/projects/${p['id']}`)}>{t('common.detail')}</Button>
+                        {p['isManager'] && <Button size="small" onClick={_ => setDeleteProjectId(p['id'])}>{t('common.delete')}</Button>}
                     </CardActions>
                 </Item>
             </Grid>)}
 
-        </Grid>
+        </Grid> : <Skeleton variant="wave" sx={{ width: '100%', height: '200px', mt: 1 }} />}
 
         {showProjectForm && <CreateProjectForm onCancel={onCancelProjectForm} onSuccess={onProjectFormSuccess}></CreateProjectForm>}
+
+        {deleteProjectId && <ConfirmDialog title={t('project.delete.confirm')}
+            message={t('project.delete.hint')} onCancel={_ => setDeleteProjectId(null)}
+            onAgree={deleteProject}></ConfirmDialog>}
     </Box>
 }

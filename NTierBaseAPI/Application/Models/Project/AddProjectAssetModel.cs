@@ -10,8 +10,16 @@ namespace Application.Models.Project
 {
     public class AddProjectAssetModel
     {
-        public IFormFile File { get; set; }
-        [FromRoute(Name = "projectId")]
+        
+        [FromRoute(Name = "id")]
         public string ProjectId { get; set; }
+
+        [FromBody]
+        public AddProjectAssetModelBody Body { get; set; }
+    }
+
+    public class AddProjectAssetModelBody
+    {
+        public List<string> AssetIds { get; set; }
     }
 }

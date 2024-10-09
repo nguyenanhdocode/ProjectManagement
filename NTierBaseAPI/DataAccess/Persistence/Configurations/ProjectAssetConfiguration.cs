@@ -17,6 +17,8 @@ namespace DataAccess.Persistence.Configurations
 
             builder.Property(p => p.ProjectId).HasColumnType("varchar(11)");
 
+            builder.Property(p => p.AddedDate).IsRequired().HasDefaultValueSql("getutcdate()");
+
             builder.HasOne(p => p.Project).WithMany(p => p.ProjectAssets).HasForeignKey(p => p.ProjectId)
                 .OnDelete(DeleteBehavior.Restrict);
 

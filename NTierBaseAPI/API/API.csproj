@@ -7,9 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Static\Uploads\46e11c0d-f978-402a-b2d8-8e8188ac61de.docx" />
-    <None Remove="Static\Uploads\960340e8-2133-4baa-bd60-377f88e23fc9.png" />
-    <None Remove="Static\Uploads\f90c1b7f-382a-4829-ae6b-dafb7cf62f69.docx" />
+    <Compile Remove="Static\**" />
+    <Content Remove="Static\**" />
+    <EmbeddedResource Remove="Static\**" />
+    <None Remove="Static\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,10 +29,6 @@
 		</PackageReference>
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Static\Uploads\" />
 	</ItemGroup>
 
 </Project>

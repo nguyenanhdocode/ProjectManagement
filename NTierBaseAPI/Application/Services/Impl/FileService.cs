@@ -94,7 +94,8 @@ namespace Application.Services.Impl
                         Type = Path.GetExtension(model.File.FileName).ToLower().Remove(0, 1),
                         FileName = fileName,
                         CreatedUserId = _claimService.GetUserId(),
-                        Size = model.File.Length
+                        Size = model.File.Length,
+                        DisplayFileName = model.File.FileName,
                     };
 
                     await _uow.AssetRepository.Add(asset);

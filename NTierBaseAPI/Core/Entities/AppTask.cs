@@ -12,7 +12,7 @@ namespace Core.Entities
         public string Name { get; set; }
         public DateTime BeginDate { get; set; }
         public DateTime EndDate { get; set; }
-        public string Note { get; set; }
+        public string? Note { get; set; }
         public DateTime CreatedDate { get; set; }
         public string CreatedUserId { get; set; }
         public string AssignedToUserId { get; set; }
@@ -20,6 +20,8 @@ namespace Core.Entities
         public string ParentId { get; set; }
         public string PreviousTaskId { get; set; }
         public int Status { get; set; }
+        public bool HasBeenDone { get; set; }
+        public DateTime? DoneDate { get; set; }
         public virtual AppUser CreatedUser { get; set; }
         public virtual AppUser AssignedToUser { get; set; }
         public virtual Project Project { get; set; }

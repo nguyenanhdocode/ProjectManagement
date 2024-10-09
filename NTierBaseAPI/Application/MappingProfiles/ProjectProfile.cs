@@ -15,7 +15,8 @@ namespace Application.MappingProfiles
         public ProjectProfile()
         {
             CreateMap<CreateProjectModel, Project>();
-            CreateMap<Project, ViewProjectOverviewModel>();
+            CreateMap<Project, ViewProjectOverviewModel>()
+                .ForMember(p => p.RemainHours, m => m.MapFrom(u => (u.EndDate - DateTime.UtcNow).TotalHours));
             CreateMap<Project, ViewProjectModel>()
                 .Include<Project, ViewProjectOverviewModel>()
                 .ForMember(p => p.IsManager, m => m.MapFrom<IsManagerResolver>());

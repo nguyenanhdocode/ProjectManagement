@@ -93,5 +93,12 @@ namespace Application.Services
         /// <param name="model"></param>
         /// <returns></returns>
         Task<RefreshTokenLoginResponseModel> LoginWithRefreshToken(RefreshTokenLoginModel model);
+
+        /// <summary>
+        /// Find user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        Task<List<ViewProfileModel>> FindUser(FindUserModel model);
     }
 }

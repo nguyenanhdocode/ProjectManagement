@@ -11,6 +11,7 @@ namespace Application.Common
         Unfulfilled,
         Doing,
         Suspend,
-        Done
+        Done,
+        Redo
     }
 }

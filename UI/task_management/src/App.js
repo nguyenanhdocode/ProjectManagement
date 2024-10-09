@@ -24,11 +24,13 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { viVN } from '@mui/x-date-pickers/locales';
 import 'dayjs/locale/vi';
 import ProjectDetail from './Components/Project/ProjectDetail';
+import TaskDetail from './Components/Task/TaskDetail';
+import DashboardIndex from './Components/Dashboard/DashboardIndex';
 
 function App() {
 
     //#region States
-    const [themeMode, setThemeMode] = useState('dark');
+    const [themeMode, setThemeMode] = useState('light');
     const [notifications, notificationDispatch] = useReducer(NotificationReducer, []);
     const [showBackdrop, backdropDispatch] = useReducer(BackdropReducer, false);
     const [user, userDispatch] = useReducer(UserReducer, cookie.load('user'));
@@ -72,8 +74,10 @@ function App() {
                                     <Routes>
                                         <Route path='users/auth' element={<Auth></Auth>}></Route>
                                         <Route path='/' element={<StartPage></StartPage>}>
+                                            <Route path='' element={<DashboardIndex></DashboardIndex>}></Route>
                                             <Route path='projects' element={<ProjectIndex></ProjectIndex>}></Route>
                                             <Route path='projects/:id' element={<ProjectDetail></ProjectDetail>}></Route>
+                                            <Route path='tasks/:id' element={<TaskDetail></TaskDetail>}></Route>
                                         </Route>
                                     </Routes>
                                 </BrowserRouter>
