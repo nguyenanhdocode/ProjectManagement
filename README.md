@@ -4,7 +4,7 @@
 ## Công nghệ sử dụng
 1. .NET 6, ASP.NET CORE API
 2. SQL SERVER
-3. ReactJS
+3. ReactJS (Material UI)
 
 ## Hình ảnh một số chức năng
 ### Màn hình danh mục dự án
